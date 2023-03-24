@@ -1,0 +1,33 @@
+.root { 
+    -fx-background-color: #1e74c6;
+    -fx-base: #f4f4f4;
+    -fx-control-inner-background: derive(-fx-base, 35%);
+    -fx-control-inner-background-alt: -fx-control-inner-background ;
+}
+
+.label{
+    -fx-text-fill: lightgray;
+}
+
+.text-field {
+    -fx-prompt-text-fill: gray;
+}
+
+.button{
+    -fx-background-color: #1e74c6;
+    /* -fx-focus-traversable: false; */
+}
+
+.button:hover{
+    -fx-text-fill: red;
+}
+
+.separator *.line { 
+    /* -fx-background-color: #3C3C3C; */
+    /* -fx-border-style: solid; */
+    /* -fx-border-width: 1px; */
+}
+
+.scroll-bar{
+    /* -fx-background-color: derive(-fx-base,45%) */
+}
