@@ -13,6 +13,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Shape;
 
 public class Controller {
 
@@ -32,7 +33,7 @@ public class Controller {
   private MenuItem btnNew, btnOpen, btnSave, btnClose;
 
   @FXML
-  private MenuButton btnSize;
+  private MenuButton btnSize, btnShape;
 
   @FXML
   private Button btnEraser, btnPen;
@@ -42,6 +43,8 @@ public class Controller {
 
   @FXML
   private ColorPicker cPicker;
+
+  private Shape shape;
 
   @FXML
   void onNew(ActionEvent event) {
@@ -100,12 +103,21 @@ public class Controller {
   }
 
   @FXML
+  void selectShape(ActionEvent event) {
+    cancelStyle();
+    btnShape.setStyle(selectedStyle);
+    lblLog.setText("Forme séléctionnée");
+  }
+
+  @FXML
   public void initialize() {
     GraphicsContext g = canvas.getGraphicsContext2D();
 
     canvas.setOnMousePressed(e -> {
       Coord mouse = Coord.getCoordMouse(e, appSize);
 
+      g.setStroke(appColor);
+      g.setLineWidth(appSize);
       g.beginPath();
       g.moveTo(mouse.x, mouse.y);
     });
@@ -125,5 +137,6 @@ public class Controller {
     String defaultStyle = "-fx-background-color: transparent";
     btnEraser.setStyle(defaultStyle);
     btnPen.setStyle(defaultStyle);
+    btnShape.setStyle(defaultStyle);
   }
 }

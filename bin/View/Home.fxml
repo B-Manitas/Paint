@@ -13,6 +13,7 @@
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -69,74 +70,61 @@
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
                   </Button>
-                  <MenuButton fx:id="btnShape" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent;">
+                  <MenuButton fx:id="btnShape" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent;">
                      <items>
-                        <CustomMenuItem mnemonicParsing="false">
+                        <CustomMenuItem mnemonicParsing="false" onAction="#selectShape">
                            <content>
-                              <HBox>
-                                 <children>
-                                    <Button mnemonicParsing="false" style="-fx-background-color: transparent;">
-                                       <graphic>
-                                          <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                             <image>
-                                                <Image url="@../../assests/icon/shape/line.png" />
-                                             </image>
-                                          </ImageView>
-                                       </graphic>
-                                       <HBox.margin>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </HBox.margin>
-                                       <padding>
-                                          <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-                                       </padding>
-                                    </Button>
-                                    <Button mnemonicParsing="false" style="-fx-background-color: transparent;">
-                                       <graphic>
-                                          <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                             <image>
-                                                <Image url="@../../assests/icon/shape/rectangle.png" />
-                                             </image>
-                                          </ImageView>
-                                       </graphic>
-                                       <HBox.margin>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </HBox.margin>
-                                       <padding>
-                                          <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-                                       </padding>
-                                    </Button>
-                                    <Button mnemonicParsing="false" style="-fx-background-color: transparent;">
-                                       <graphic>
-                                          <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                             <image>
-                                                <Image url="@../../assests/icon/shape/circle.png" />
-                                             </image>
-                                          </ImageView>
-                                       </graphic>
-                                       <HBox.margin>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </HBox.margin>
-                                       <padding>
-                                          <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-                                       </padding>
-                                    </Button>
-                                    <Button mnemonicParsing="false" style="-fx-background-color: transparent;">
-                                       <graphic>
-                                          <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                             <image>
-                                                <Image url="@../../assests/icon/shape/triangle.png" />
-                                             </image>
-                                          </ImageView>
-                                       </graphic>
-                                       <HBox.margin>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </HBox.margin>
-                                       <padding>
-                                          <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-                                       </padding>
-                                    </Button>
-                                 </children>
-                              </HBox>
+                                <ToggleButton style="-fx-background-color: transparent;">
+                                 <graphic>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../assests/icon/shape/line.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="groupShape" />
+                                 </toggleGroup>
+                                </ToggleButton>
+                           </content>
+                        </CustomMenuItem>
+                        <CustomMenuItem mnemonicParsing="false" onAction="#selectShape">
+                           <content>
+                              <ToggleButton style="-fx-background-color: transparent;" toggleGroup="$groupShape">
+                                 <graphic>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../assests/icon/shape/rectangle.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </ToggleButton>
+                           </content>
+                        </CustomMenuItem>
+                        <CustomMenuItem mnemonicParsing="false" onAction="#selectShape">
+                           <content>
+                              <ToggleButton style="-fx-background-color: transparent;" toggleGroup="$groupShape">
+                                 <graphic>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../assests/icon/shape/circle.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </ToggleButton>
+                           </content>
+                        </CustomMenuItem>
+                        <CustomMenuItem mnemonicParsing="false" onAction="#selectShape">
+                           <content>
+                              <ToggleButton style="-fx-background-color: transparent;" toggleGroup="$groupShape">
+                                 <graphic>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../assests/icon/shape/triangle.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </ToggleButton>
                            </content>
                         </CustomMenuItem>
                      </items>
