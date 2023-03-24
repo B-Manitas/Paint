@@ -20,10 +20,11 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: #f4f4f4;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="722.0" prefWidth="1100.0" style="-fx-background-color: #f4f4f4;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
    <children>
       <HBox alignment="CENTER" layoutX="325.0" layoutY="175.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <padding>
@@ -56,45 +57,7 @@
             </HBox>
             <HBox alignment="CENTER" prefHeight="40.0" HBox.hgrow="ALWAYS">
                <children>
-                  <MenuButton mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent;" HBox.hgrow="ALWAYS">
-                    <items>
-                        <CustomMenuItem hideOnClick="false" mnemonicParsing="false">
-                           <content>
-                              <HBox>
-                                 <children>
-                                    <RadioButton fx:id="radioPenSize1" mnemonicParsing="false" onAction="#selectPen" text="1px">
-                                       <HBox.margin>
-                                          <Insets left="5.0" right="5.0" />
-                                       </HBox.margin>
-                                       <toggleGroup>
-                                          <ToggleGroup fx:id="penSize" />
-                                       </toggleGroup>
-                                    </RadioButton>
-                                    <RadioButton mnemonicParsing="false" onAction="#selectPen" selected="true" text="2px" toggleGroup="$penSize">
-                                       <HBox.margin>
-                                          <Insets left="5.0" right="5.0" />
-                                       </HBox.margin>
-                                    </RadioButton>
-                                    <RadioButton mnemonicParsing="false" onAction="#selectPen" text="3px" toggleGroup="$penSize">
-                                       <HBox.margin>
-                                          <Insets left="5.0" right="5.0" />
-                                       </HBox.margin>
-                                    </RadioButton>
-                                    <RadioButton mnemonicParsing="false" onAction="#selectPen" text="5px" toggleGroup="$penSize">
-                                       <HBox.margin>
-                                          <Insets left="5.0" right="5.0" />
-                                       </HBox.margin>
-                                    </RadioButton>
-                                    <RadioButton mnemonicParsing="false" onAction="#selectPen" text="10px" toggleGroup="$penSize">
-                                       <HBox.margin>
-                                          <Insets left="5.0" right="5.0" />
-                                       </HBox.margin>
-                                    </RadioButton>
-                                 </children>
-                              </HBox>
-                           </content>
-                        </CustomMenuItem>
-                    </items>
+                  <Button fx:id="btnPen" mnemonicParsing="false" onAction="#selectPen" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: #D3E8EE; -fx-background-radius: 5;">
                      <graphic>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -102,10 +65,13 @@
                            </image>
                         </ImageView>
                      </graphic>
-                  </MenuButton>
-                  <MenuButton mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent;">
+                     <HBox.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </HBox.margin>
+                  </Button>
+                  <MenuButton fx:id="btnShape" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent;">
                      <items>
-                        <CustomMenuItem mnemonicParsing="false" text="Unspecified Action">
+                        <CustomMenuItem mnemonicParsing="false">
                            <content>
                               <HBox>
                                  <children>
@@ -181,15 +147,56 @@
                            </image>
                         </ImageView>
                      </graphic>
-                  </MenuButton>
-                  <Separator orientation="VERTICAL" prefHeight="200.0" />
-                  <ColorPicker prefHeight="40.0" prefWidth="100.0" style="-fx-background-color: transparent; -fx-background-radius: 5; -fx-border-radius: 5;">
                      <HBox.margin>
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
+                  </MenuButton>
+                  <Separator orientation="VERTICAL" prefHeight="200.0" />
+                  <ColorPicker fx:id="cPicker" onAction="#selectColor" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: transparent; -fx-background-radius: 5; -fx-border-radius: 5;">
+                     <HBox.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </HBox.margin>
+                     <value>
+                        <Color />
+                     </value>
                   </ColorPicker>
+                  <MenuButton fx:id="btnSize" mnemonicParsing="false" prefHeight="40.0" prefWidth="66.0" style="-fx-background-color: transparent;" text="2px">
+                     <items>
+                        <CustomMenuItem mnemonicParsing="false">
+                           <content>
+                              <HBox>
+                                 <children>
+                                    <RadioButton mnemonicParsing="false" onAction="#selectSize" selected="true" text="2px">
+                                       <HBox.margin>
+                                          <Insets left="5.0" right="5.0" />
+                                       </HBox.margin>
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="groupSize" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton mnemonicParsing="false" onAction="#selectSize" text="5px" toggleGroup="$groupSize">
+                                       <HBox.margin>
+                                          <Insets left="5.0" right="5.0" />
+                                       </HBox.margin>
+                                    </RadioButton>
+                                    <RadioButton mnemonicParsing="false" onAction="#selectSize" text="10px" toggleGroup="$groupSize">
+                                       <HBox.margin>
+                                          <Insets left="5.0" right="5.0" />
+                                       </HBox.margin>
+                                    </RadioButton>
+                                    <RadioButton mnemonicParsing="false" onAction="#selectSize" text="15px" toggleGroup="$groupSize">
+                                       <HBox.margin>
+                                          <Insets left="5.0" right="5.0" />
+                                       </HBox.margin>
+                                    </RadioButton>
+                                 </children>
+                              </HBox>
+                           </content>
+                        </CustomMenuItem>
+                     </items>
+                  </MenuButton>
                   <Separator orientation="VERTICAL" prefHeight="48.0" prefWidth="0.0" />
-                  <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
+                  <Button fx:id="btnEraser" mnemonicParsing="false" onAction="#selectEraser" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
                      <graphic>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" rotate="180.0">
                            <image>
@@ -240,51 +247,68 @@
             </HBox>
          </children>
       </HBox>
-      <Pane prefHeight="636.0" prefWidth="873.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="90.0">
+      <Pane prefHeight="636.0" prefWidth="873.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="90.0">
          <children>
-            <Canvas fx:id="canvas" height="600.0" width="980.0" />
-         </children>
-      </Pane>
-      <Pane AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0">
-         <children>
-            <HBox alignment="CENTER" style="-fx-border-radius: 5; -fx-background-radius: 5; -fx-background-color: #fafafa;">
+            <Canvas fx:id="canvas" height="582.0" width="1080.0" />
+            <Pane layoutX="14.0" layoutY="520.0">
                <children>
-                  <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
-                     <graphic>
-                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../../assests/icon/minus.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                     <HBox.margin>
-                        <Insets bottom="3.0" left="3.0" right="3.0" top="5.0" />
-                     </HBox.margin>
-                  </Button>
-                  <Pane HBox.hgrow="ALWAYS">
+                  <HBox alignment="CENTER" style="-fx-border-radius: 5; -fx-background-radius: 5; -fx-background-color: #fafafa;">
                      <children>
-                        <Text layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="100%" textAlignment="CENTER" textOrigin="CENTER" wrappingWidth="78.0">
-                           <font>
-                              <Font size="22.0" />
-                           </font>
-                        </Text>
+                        <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
+                           <graphic>
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../assests/icon/minus.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <HBox.margin>
+                              <Insets bottom="3.0" left="3.0" right="3.0" top="5.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Pane HBox.hgrow="ALWAYS">
+                           <children>
+                              <Text layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="100%" textAlignment="CENTER" textOrigin="CENTER" wrappingWidth="78.0">
+                                 <font>
+                                    <Font size="22.0" />
+                                 </font>
+                              </Text>
+                           </children>
+                           <HBox.margin>
+                              <Insets bottom="3.0" left="3.0" right="3.0" top="5.0" />
+                           </HBox.margin>
+                        </Pane>
+                        <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
+                           <graphic>
+                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../assests/icon/plus.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <HBox.margin>
+                              <Insets bottom="3.0" left="3.0" right="3.0" top="5.0" />
+                           </HBox.margin>
+                        </Button>
                      </children>
+                  </HBox>
+               </children>
+            </Pane>
+            <HBox alignment="CENTER" layoutY="597.0" prefHeight="25.0" prefWidth="980.0">
+               <children>
+                  <Label prefHeight="25.0" prefWidth="426.0" text="Information :" underline="true">
                      <HBox.margin>
-                        <Insets bottom="3.0" left="3.0" right="3.0" top="5.0" />
+                        <Insets right="10.0" />
                      </HBox.margin>
-                  </Pane>
-                  <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
-                     <graphic>
-                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../../assests/icon/plus.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                     <HBox.margin>
-                        <Insets bottom="3.0" left="3.0" right="3.0" top="5.0" />
-                     </HBox.margin>
-                  </Button>
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="lblLog" prefHeight="25.0" prefWidth="1182.0" text="...">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Label>
                </children>
             </HBox>
          </children>
