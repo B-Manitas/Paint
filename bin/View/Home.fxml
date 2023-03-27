@@ -43,7 +43,7 @@
                      <graphic>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../../assests/icon/settings.png" />
+                              <Image url="@minus.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -62,7 +62,7 @@
                      <graphic>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../../assests/icon/pen.png" />
+                              <Image url="@assets/icon/pen.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -78,7 +78,7 @@
                                  <graphic>
                                     <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@../../assests/icon/shape/line.png" />
+                                          <Image url="@assets/icon/shape/line.png" />
                                        </image>
                                     </ImageView>
                                  </graphic>
@@ -94,7 +94,7 @@
                                  <graphic>
                                     <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@../../assests/icon/shape/rectangle.png" />
+                                          <Image url="@assets/icon/shape/rectangle.png" />
                                        </image>
                                     </ImageView>
                                  </graphic>
@@ -107,7 +107,7 @@
                                  <graphic>
                                     <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@../../assests/icon/shape/circle.png" />
+                                          <Image url="@assets/icon/shape/circle.png" />
                                        </image>
                                     </ImageView>
                                  </graphic>
@@ -120,7 +120,7 @@
                                  <graphic>
                                     <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@../../assests/icon/shape/triangle.png" />
+                                          <Image url="@assets/icon/shape/triangle.png" />
                                        </image>
                                     </ImageView>
                                  </graphic>
@@ -131,7 +131,7 @@
                      <graphic>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../../assests/icon/shape.png" />
+                              <Image url="@assets/icon/shape.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -188,7 +188,7 @@
                      <graphic>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" rotate="180.0">
                            <image>
-                              <Image url="@../../assests/icon/eraser.png" />
+                              <Image url="@assets/icon/eraser.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -206,7 +206,7 @@
                      <graphic>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" rotate="180.0">
                            <image>
-                              <Image url="@../../assests/icon/background.png" />
+                              <Image url="@assets/icon/background.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -218,7 +218,7 @@
                      <graphic>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" rotate="180.0">
                            <image>
-                              <Image url="@../../assests/icon/foreground.png" />
+                              <Image url="@assets/icon/foreground.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -246,7 +246,7 @@
                            <graphic>
                               <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../../assests/icon/minus.png" />
+                                    <Image url="@assets/icon/minus.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -270,7 +270,7 @@
                            <graphic>
                               <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../../assests/icon/plus.png" />
+                                    <Image url="@assets/icon/plus.png" />
                                  </image>
                               </ImageView>
                            </graphic>
