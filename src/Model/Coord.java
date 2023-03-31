@@ -11,6 +11,9 @@ public class Coord {
     x = posX;
     y = posY;
   }
+  public static Coord createCoord(double x, double y) {
+    return new Coord(x, y);
+  }
 
   public static Coord getCoordMouse(MouseEvent e){
     double posX = e.getX();

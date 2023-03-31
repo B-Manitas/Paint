@@ -72,7 +72,7 @@
                   </Button>
                   <MenuButton fx:id="btnShape" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent;">
                      <items>
-                        <CustomMenuItem mnemonicParsing="false" onAction="#selectShape">
+                        <CustomMenuItem fx:id="btnLine" mnemonicParsing="false" onAction="#selectLine">
                            <content>
                                 <ToggleButton style="-fx-background-color: transparent;">
                                  <graphic>
@@ -88,7 +88,7 @@
                                 </ToggleButton>
                            </content>
                         </CustomMenuItem>
-                        <CustomMenuItem mnemonicParsing="false" onAction="#selectShape">
+                        <CustomMenuItem fx:id="btnRect" mnemonicParsing="false" onAction="#selectRectangle">
                            <content>
                               <ToggleButton style="-fx-background-color: transparent;" toggleGroup="$groupShape">
                                  <graphic>
@@ -101,7 +101,7 @@
                               </ToggleButton>
                            </content>
                         </CustomMenuItem>
-                        <CustomMenuItem mnemonicParsing="false" onAction="#selectShape">
+                        <CustomMenuItem fx:id="btnCircle" mnemonicParsing="false" onAction="#selectShape">
                            <content>
                               <ToggleButton style="-fx-background-color: transparent;" toggleGroup="$groupShape">
                                  <graphic>
@@ -114,7 +114,7 @@
                               </ToggleButton>
                            </content>
                         </CustomMenuItem>
-                        <CustomMenuItem mnemonicParsing="false" onAction="#selectShape">
+                        <CustomMenuItem fx:id="btnTriangle" mnemonicParsing="false" onAction="#selectShape">
                            <content>
                               <ToggleButton style="-fx-background-color: transparent;" toggleGroup="$groupShape">
                                  <graphic>
