@@ -1,4 +1,5 @@
 package Model;
+
 public class Model {
 
   public int getSize(String strSize) {

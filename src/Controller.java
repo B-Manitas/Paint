@@ -1,6 +1,6 @@
 import Model.Coord;
 import Model.Model;
-
+import Model.PenShape;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -25,7 +25,13 @@ import javafx.stage.Stage;
 import javafx.embed.swing.SwingFXUtils;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import javax.imageio.ImageIO;
+import javafx.scene.image.PixelReader;
+import javafx.scene.shape.LineTo; 
+import javafx.scene.shape.MoveTo; 
+import javafx.scene.shape.Path;
 
 
 
@@ -145,14 +151,16 @@ public class Controller {
     lblLog.setText("Gomme séléctionnée");
     btnEraser.setStyle(selectedStyle);
   }
+  
 
   @FXML
   void selectShape(ActionEvent event) {
     cancelStyle();
     btnShape.setStyle(selectedStyle);
     lblLog.setText("Forme séléctionnée");
+    btnShape.setStyle(selectedStyle);
   }
-
+  
   @FXML
   void selectLine(ActionEvent event) {
     cancelStyle();
@@ -160,17 +168,40 @@ public class Controller {
     lblLog.setText("Ligne sélectionnée");
     btnLine.setStyle(selectedStyle);
     shape = new javafx.scene.shape.Line();
+    btnShape.setStyle(selectedStyle);
   }
-
+  
   @FXML
   void selectRectangle(ActionEvent event) {
     cancelStyle();
     appColor = cPicker.getValue();
     lblLog.setText("Rectangle sélectionné");
-    btnLine.setStyle(selectedStyle);
+    btnRect.setStyle(selectedStyle);
+    btnShape.setStyle(selectedStyle);
     shape = new javafx.scene.shape.Rectangle();
   }
-
+  
+  @FXML
+  void selectCircle(ActionEvent event) {
+    cancelStyle();
+    btnShape.setStyle(selectedStyle);
+    appColor = cPicker.getValue();
+    lblLog.setText("Cercle sélectionné");
+    btnCircle.setStyle(selectedStyle);
+    shape = new javafx.scene.shape.Circle();
+  }
+  
+  @FXML
+  void selectTriangle(ActionEvent event) {
+    cancelStyle();
+    appColor = cPicker.getValue();
+    lblLog.setText("Cercle sélectionné");
+    btnTriangle.setStyle(selectedStyle);
+    btnShape.setStyle(selectedStyle);
+    shape = new javafx.scene.shape.Polygon();
+  }
+  
+  
   // Méthode pour dessiner une ligne
   private void drawLine(GraphicsContext gc, Coord start, Coord end) {
     gc.setStroke(appColor);
@@ -191,10 +222,38 @@ public class Controller {
     gc.strokeRect(x, y, width, height);
   }
 
+  //Méthode pour dessiner un cercle
+  private void drawCircle(GraphicsContext gc, Coord start, Coord end) {
+    gc.setStroke(appColor);
+    gc.setLineWidth(appSize);
+
+    double radius = start.getDistance(end);
+    double centerX = start.x;
+    double centerY = start.y;
+
+    gc.strokeOval(centerX - radius, centerY - radius, radius * 2, radius * 2);
+  }
+
+  //Méthode pour dessiner un triangle
+  private void drawTriangle(GraphicsContext gc, Coord point1, Coord point2, Coord point3) {
+    gc.setStroke(appColor);
+    gc.setLineWidth(appSize);
+
+    double[] xPoints = new double[]{point1.x, point2.x, point3.x};
+    double[] yPoints = new double[]{point1.y, point2.y, point3.y};
+
+    gc.strokePolygon(xPoints, yPoints, 3);
+  }
+
+
 
   public Coord startpos = Coord.createCoord(0,0);
   public Coord currentpos = Coord.createCoord(0,0);
+  public Coord oppositepos = Coord.createCoord(0,0);
+  public PenShape penShape;
+  public ArrayList<PenShape> Shapes = new ArrayList<PenShape>();
   private Image previousImage;
+
 
   @FXML
   public void initialize() {
@@ -203,12 +262,12 @@ public class Controller {
     canvas.setOnMousePressed(e -> {
         startpos = Coord.getCoordMouse(e, appSize);
         currentpos = startpos;
+        penShape = new PenShape(startpos, appColor, appSize);
 
         g.setStroke(appColor);
         g.setLineWidth(appSize);
         g.beginPath();
-        g.moveTo(startpos.x, startpos.y);
-
+        g.moveTo(e.getX(), e.getY());
         previousImage = canvas.snapshot(null, null); // enregistrer l'image actuelle
     });
 
@@ -228,11 +287,27 @@ public class Controller {
           drawRectangle(g, startpos, currentpos);
           //((javafx.scene.shape.Line) shape).setEndX(currentpos.x);
           //((javafx.scene.shape.Line) shape).setEndY(currentpos.y);
+      } else if (shape != null && shape instanceof javafx.scene.shape.Circle) {
+          g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight()); // Effacer le contenu du canvas
+          g.drawImage(previousImage, 0, 0); // Restaurer l'image précédente
+          drawCircle(g, startpos, currentpos);
+      } else if (shape != null && shape instanceof javafx.scene.shape.Polygon) {
+          oppositepos.x = currentpos.x - currentpos.getDistance(startpos);
+          oppositepos.y = currentpos.y;
+          g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight()); // Effacer le contenu du canvas
+          g.drawImage(previousImage, 0, 0); // Restaurer l'image précédente
+          drawTriangle(g, startpos, currentpos, oppositepos);
       } else {
-          g.setStroke(appColor);
-          g.setLineWidth(appSize);
-          g.lineTo(mouse.x, mouse.y);
+          double cpx = (startpos.x + currentpos.x) / 2.0;
+          double cpy = (startpos.y + currentpos.y) / 2.0;
+    
+          g.quadraticCurveTo(startpos.x, startpos.y, cpx, cpy);
           g.stroke();
+          g.beginPath();
+          g.moveTo(cpx, cpy);
+
+          startpos = currentpos;
+          penShape.addCoord(currentpos);
           previousImage = canvas.snapshot(null, null); // enregistrer la nouvelle image
       }
     });
@@ -244,22 +319,24 @@ public class Controller {
         if (shape != null && shape instanceof javafx.scene.shape.Line) {
             g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight()); // Effacer le contenu du canvas
             g.drawImage(previousImage, 0, 0); // Restaurer l'image précédente
-
             drawLine(g, startpos, currentpos);
             ((javafx.scene.shape.Line) shape).setEndX(currentpos.x);
             ((javafx.scene.shape.Line) shape).setEndY(currentpos.y);
         } else if (shape != null && shape instanceof javafx.scene.shape.Rectangle){
             g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight()); // Effacer le contenu du canvas
             g.drawImage(previousImage, 0, 0); // Restaurer l'image précédente
-
             drawRectangle(g, startpos, currentpos);
-            //((javafx.scene.shape.Line) shape).setEndX(currentpos.x);
-            //((javafx.scene.shape.Line) shape).setEndY(currentpos.y);
+        } else if (shape != null && shape instanceof javafx.scene.shape.Circle){
+            g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight()); // Effacer le contenu du canvas
+            g.drawImage(previousImage, 0, 0); // Restaurer l'image précédente
+            drawCircle(g, startpos, currentpos);
+        } else if (shape != null && shape instanceof javafx.scene.shape.Circle){
+            g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight()); // Effacer le contenu du canvas
+            g.drawImage(previousImage, 0, 0); // Restaurer l'image précédente
+            drawTriangle(g, startpos, currentpos, oppositepos);
         } else {
-            g.setStroke(appColor);
-            g.setLineWidth(appSize);
-            g.lineTo(currentpos.x, currentpos.y);
-            g.stroke();
+            penShape.addCoord(currentpos);
+            Shapes.add(penShape);
         }
     });
   }
@@ -270,5 +347,39 @@ public class Controller {
     btnEraser.setStyle(defaultStyle);
     btnPen.setStyle(defaultStyle);
     btnShape.setStyle(defaultStyle);
+    btnShape.setStyle(defaultStyle);;
   }
+
+  public void eraseColor(GraphicsContext gc, Coord c) {
+    PixelReader pixelReader = gc.getCanvas().snapshot(null, null).getPixelReader();
+    Color color = pixelReader.getColor((int)c.x, (int)c.y);
+    eraseColorRecursive(gc, pixelReader, color, c);
+  }
+
+  private void eraseColorRecursive(GraphicsContext gc, PixelReader pixelReader, Color color, Coord c) {
+    if (c.x < 0 || c.y < 0 || c.x >= gc.getCanvas().getWidth() || c.y >= gc.getCanvas().getHeight()) {
+        return;
+    }
+    if (!pixelReader.getColor((int)c.x, (int)c.y).equals(color)) {
+        return;
+    }
+    gc.setStroke(Color.WHITE);
+    gc.setLineWidth(appSize);
+    gc.moveTo(c.x, c.y);
+    gc.stroke();
+    ArrayList<Coord> neighbors = getNeighbors(c);
+    for (Coord neighbor : neighbors) {
+        eraseColorRecursive(gc, pixelReader, color, neighbor);
+    }
+  }
+  private ArrayList<Coord> getNeighbors(Coord c) {
+    ArrayList<Coord> neighbors = new ArrayList<>();
+    neighbors.add(Coord.createCoord(c.x - 1, c.y));
+    neighbors.add(Coord.createCoord(c.x + 1, c.y));
+    neighbors.add(Coord.createCoord(c.x, c.y - 1));
+    neighbors.add(Coord.createCoord(c.x, c.y + 1));
+    System.out.println(neighbors);
+    return neighbors;
+  }
+
 }
