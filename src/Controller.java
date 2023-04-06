@@ -18,6 +18,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
@@ -61,7 +62,10 @@ public class Controller {
   private CustomMenuItem btnLine, btnRect, btnCircle, btnTriangle;
 
   @FXML
-  private Button btnEraser, btnPen;
+  private TextField inputSize;
+
+  @FXML
+  private Button btnEraser, btnPen, upSize, downSize;
 
   @FXML
   private ToggleGroup groupSize;
@@ -122,15 +126,48 @@ public class Controller {
   }
 
   @FXML
-  void selectSize(ActionEvent event) {
-    RadioButton selectedSize = (RadioButton) groupSize.getSelectedToggle();
-    String strSize = selectedSize.getText();
-
-    appSize = Integer.parseInt(strSize.replace("px", ""));
-    btnSize.setText(selectedSize.getText());
-
-    lblLog.setText("Taille modifiée");
+  public void listenSize() {
+        String text = inputSize.getText();
+        try {
+            int newSize = Integer.parseInt(text);
+            if (newSize < 1 || newSize > 20) {
+                throw new NumberFormatException();
+            }
+            appSize = newSize;
+            lblLog.setText("Taille modifiée");
+            inputSize.setText(Integer.toString(appSize));
+        } catch (NumberFormatException ex) {
+            inputSize.setText(Integer.toString(appSize));
+            lblLog.setText("Veuillez entrer un nombre valide.");
+        }
   }
+
+  @FXML
+  public void increaseSize(ActionEvent event) {
+    if(appSize==20){return;}
+    appSize++;
+    inputSize.setText(Integer.toString(appSize));
+    lblLog.setText("Taille augtmentée");
+  }
+
+  @FXML
+  public void decreaseSize(ActionEvent event) {
+    if(appSize==1){return;}
+    appSize--;
+    inputSize.setText(Integer.toString(appSize));
+    lblLog.setText("Taille diminuée");
+  }
+
+  // @FXML
+  // void selectSize(ActionEvent event) {
+  //   RadioButton selectedSize = (RadioButton) groupSize.getSelectedToggle();
+  //   String strSize = selectedSize.getText();
+
+  //   appSize = Integer.parseInt(strSize.replace("px", ""));
+  //   btnSize.setText(selectedSize.getText());
+
+  //   lblLog.setText("Taille modifiée");
+  // }
 
   @FXML
   void selectPen(ActionEvent event) {
@@ -246,7 +283,6 @@ public class Controller {
   }
 
 
-
   public Coord startpos = Coord.createCoord(0,0);
   public Coord currentpos = Coord.createCoord(0,0);
   public Coord oppositepos = Coord.createCoord(0,0);
@@ -258,8 +294,10 @@ public class Controller {
   @FXML
   public void initialize() {
     GraphicsContext g = canvas.getGraphicsContext2D();
+    inputSize.setText(Integer.toString(appSize));
 
     canvas.setOnMousePressed(e -> {
+        System.out.println(appSize);
         startpos = Coord.getCoordMouse(e, appSize);
         currentpos = startpos;
         penShape = new PenShape(startpos, appColor, appSize);

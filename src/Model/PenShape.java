@@ -93,8 +93,6 @@ public class PenShape extends Shape {
 			}
 		  }
 	}
-	
-	
 
   	public boolean isInList(Coord c) {
 		for(int i = 0; i < shapeCoord.size(); i++){
