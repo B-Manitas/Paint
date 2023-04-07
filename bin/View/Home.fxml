@@ -34,19 +34,12 @@
          <children>
             <HBox>
                <children>
-                  <TextField focusTraversable="false" prefHeight="40.0" text="Sans titre" HBox.hgrow="ALWAYS">
+                  <TextField fx:id="fileTitle" focusTraversable="false" prefHeight="47.0" prefWidth="217.0" text="Sans titre" HBox.hgrow="ALWAYS">
                      <font>
                         <Font name="System Bold" size="15.0" />
                      </font>
                   </TextField>
-                  <MenuButton mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent;">
-                     <graphic>
-                        <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@minus.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
+                  <MenuButton mnemonicParsing="false" prefHeight="40.0" prefWidth="0.0" style="-fx-background-color: transparent;">
                      <items>
                         <MenuItem fx:id="btnNew" mnemonicParsing="false" onAction="#onNew" text="Nouveau" />
                         <MenuItem fx:id="btnOpen" mnemonicParsing="false" onAction="#onOpen" text="Ouvrir" />
@@ -72,7 +65,7 @@
                   </Button>
                   <MenuButton fx:id="btnShape" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent;">
                      <items>
-                        <CustomMenuItem mnemonicParsing="false" onAction="#selectShape">
+                        <CustomMenuItem fx:id="btnLine" mnemonicParsing="false" onAction="#selectLine">
                            <content>
                                 <ToggleButton style="-fx-background-color: transparent;">
                                  <graphic>
@@ -88,7 +81,7 @@
                                 </ToggleButton>
                            </content>
                         </CustomMenuItem>
-                        <CustomMenuItem mnemonicParsing="false" onAction="#selectShape">
+                        <CustomMenuItem fx:id="btnRect" mnemonicParsing="false" onAction="#selectRectangle">
                            <content>
                               <ToggleButton style="-fx-background-color: transparent;" toggleGroup="$groupShape">
                                  <graphic>
@@ -101,7 +94,7 @@
                               </ToggleButton>
                            </content>
                         </CustomMenuItem>
-                        <CustomMenuItem mnemonicParsing="false" onAction="#selectShape">
+                        <CustomMenuItem fx:id="btnCircle" mnemonicParsing="false" onAction="#selectCircle">
                            <content>
                               <ToggleButton style="-fx-background-color: transparent;" toggleGroup="$groupShape">
                                  <graphic>
@@ -114,7 +107,7 @@
                               </ToggleButton>
                            </content>
                         </CustomMenuItem>
-                        <CustomMenuItem mnemonicParsing="false" onAction="#selectShape">
+                        <CustomMenuItem fx:id="btnTriangle" mnemonicParsing="false" onAction="#selectTriangle">
                            <content>
                               <ToggleButton style="-fx-background-color: transparent;" toggleGroup="$groupShape">
                                  <graphic>
