@@ -73,14 +73,14 @@ public class PenShape extends Shape {
         double cpx = (pos1.x + pos2.x) / 2.0;
         double cpy = (pos1.y + pos2.y) / 2.0;
 
-        gc.beginPath();
-        gc.quadraticCurveTo(pos1.x, pos1.y, cpx, cpy);
-        gc.stroke();
-        gc.closePath();
-        gc.moveTo(cpx, cpy);
-      }
-    }
-  }
+			  gc.beginPath();
+			  gc.quadraticCurveTo(pos1.x, pos1.y, cpx,cpy);
+			  gc.stroke();
+			  gc.closePath();
+			  gc.moveTo(cpx, cpy);
+			}
+		  }
+	}
 
   public boolean isInList(Coord c) {
     /**

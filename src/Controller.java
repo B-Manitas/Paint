@@ -53,7 +53,10 @@ public class Controller {
   private CustomMenuItem btnLine, btnRect, btnCircle, btnTriangle;
 
   @FXML
-  private Button btnEraser, btnPen;
+  private TextField inputSize;
+
+  @FXML
+  private Button btnEraser, btnPen, upSize, downSize;
 
   @FXML
   private ToggleGroup groupSize;
@@ -134,7 +137,7 @@ public class Controller {
   }
 
   @FXML
-  void selectSize(ActionEvent event) {
+  public void selectSize(ActionEvent event) {
     /**
      * Sélectionner la taille de l'outils.
      */
@@ -144,8 +147,53 @@ public class Controller {
     model.setToolSize(strSize);
     btnSize.setText(selectedSize.getText());
 
-    lblLog.setText("Taille modifiée");
   }
+  
+  public void listenSize() {
+        String text = inputSize.getText();
+        try {
+            int newSize = Integer.parseInt(text);
+            if (newSize < 1 || newSize > 20) {
+                throw new NumberFormatException();
+            }
+
+            model.setToolSize(newSize);
+            lblLog.setText("Taille modifiée");
+            inputSize.setText(Integer.toString(model.getToolSize()));
+        } 
+        
+        catch (NumberFormatException ex) {
+            inputSize.setText(Integer.toString(model.getToolSize()));
+            lblLog.setText("Veuillez entrer un nombre valide.");
+        }
+  }
+
+  @FXML
+  public void increaseSize(ActionEvent event) {
+    if(model.getToolSize()==20){return;}
+    model.setToolSize(model.getToolSize() + 1);
+    inputSize.setText(Integer.toString(model.getToolSize()));
+    lblLog.setText("Taille augtmentée");
+  }
+
+  @FXML
+  public void decreaseSize(ActionEvent event) {
+    if(model.getToolSize()==1){return;}
+    model.setToolSize(model.getToolSize() - 1);
+    inputSize.setText(Integer.toString(model.getToolSize()));
+    lblLog.setText("Taille diminuée");
+  }
+
+  // @FXML
+  // void selectSize(ActionEvent event) {
+  //   RadioButton selectedSize = (RadioButton) groupSize.getSelectedToggle();
+  //   String strSize = selectedSize.getText();
+
+  //   appSize = Integer.parseInt(strSize.replace("px", ""));
+  //   btnSize.setText(selectedSize.getText());
+
+  //   lblLog.setText("Taille modifiée");
+  // }
 
   @FXML
   void selectPen(ActionEvent event) {
