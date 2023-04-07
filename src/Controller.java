@@ -1,8 +1,5 @@
-import Model.Coord;
-import Model.Model;
-import Model.ShapePen;
+import Model.*;
 import java.io.*;
-import java.util.ArrayList;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
@@ -13,24 +10,23 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
 import javafx.stage.*;
 import javax.imageio.ImageIO;
 
 public class Controller {
 
-  private Model model = new Model();
+  public Model model = new Model();
 
   // Déclare les attricuts de l'états de l'application
   private String selectedStyle = "-fx-background-color: #D3E8EE";
 
-  private Shape shape;
-
-  public Coord posStart = Coord.createCoord(0, 0);
-  public Coord posCurrent = Coord.createCoord(0, 0);
-  public Coord posOpposite = Coord.createCoord(0, 0);
-  public ShapePen shapePen;
-  public ArrayList<Shape> Shapes = new ArrayList<Shape>();
+  public Coord posStart = new Coord();
+  public Coord posCurrent = new Coord();
+  public Coord posOpposite = new Coord();
+  public IShape shapeSelected = new ShapePen(
+    model.getColor(),
+    model.getToolSize()
+  );
   private Image previousImage;
 
   // Déclare les attributs de la vue
@@ -56,7 +52,7 @@ public class Controller {
   private TextField inputSize;
 
   @FXML
-  private Button btnEraser, btnPen, upSize, downSize;
+  private Button btnEraser, btnPen, upSize, downSize, btnSelect;
 
   @FXML
   private ToggleGroup groupSize;
@@ -194,7 +190,8 @@ public class Controller {
     /**
      * Sélectionner le pinceau.
      */
-    shape = null;
+    shapeSelected =
+      new ShapePen(posStart, model.getColor(), model.getToolSize());
     cancelStyle();
     model.setColor(cPicker);
 
@@ -207,7 +204,7 @@ public class Controller {
     /**
      * Sélectionner la gomme.
      */
-    shape = null;
+    shapeSelected = new ShapeEraser(model.getToolSize());
     cancelStyle();
 
     model.setColor(Color.WHITE);
@@ -235,7 +232,7 @@ public class Controller {
     model.setColor(cPicker);
     lblLog.setText("Ligne sélectionnée");
     btnLine.setStyle(selectedStyle);
-    shape = new Line();
+    shapeSelected = new ShapeLine(posStart, model.getToolSize());
     btnShape.setStyle(selectedStyle);
   }
 
@@ -250,7 +247,7 @@ public class Controller {
     lblLog.setText("Rectangle sélectionné");
     btnRect.setStyle(selectedStyle);
     btnShape.setStyle(selectedStyle);
-    shape = new Rectangle();
+    // shape = new Rectangle();
   }
 
   @FXML
@@ -263,7 +260,7 @@ public class Controller {
     model.setColor(cPicker);
     lblLog.setText("Cercle sélectionné");
     btnCircle.setStyle(selectedStyle);
-    shape = new Circle();
+    // shape = new Circle();
   }
 
   @FXML
@@ -276,7 +273,15 @@ public class Controller {
     lblLog.setText("Cercle sélectionné");
     btnTriangle.setStyle(selectedStyle);
     btnShape.setStyle(selectedStyle);
-    shape = new Polygon();
+    // shape = new Polygon();
+  }
+
+  @FXML
+  void selectObject(ActionEvent event) {
+    cancelStyle();
+    shapeSelected = new ShapeSelector(model);
+    lblLog.setText("Outils de sélections");
+    btnSelect.setStyle(selectedStyle);
   }
 
   @FXML
@@ -286,27 +291,34 @@ public class Controller {
     btnPen.setStyle(defaultStyle);
     btnShape.setStyle(defaultStyle);
     btnShape.setStyle(defaultStyle);
+    btnSelect.setStyle(defaultStyle);
   }
 
   @FXML
   public void initialize() {
     GraphicsContext gc = canvas.getGraphicsContext2D();
+    model.setGraphicsContext(gc);
+    model.setCanvas(canvas);
 
     canvas.setOnMousePressed(e -> {
       // Récupère les coordonnées de la souris
       posStart = Coord.getCoordMouse(e, model.getToolSize());
       posCurrent = posStart;
 
-      // Créer une nouvelle forme pinceau
-      shapePen = new ShapePen(posStart, model.getColor(), model.getToolSize());
-
       gc.setStroke(model.getColor());
       gc.setLineWidth(model.getToolSize());
       gc.beginPath();
       gc.moveTo(e.getX(), e.getY());
 
+      shapeSelected.initializeCoord(posStart);
+
       // Sauvegarder l'image précédente
       previousImage = canvas.snapshot(null, null);
+
+      if (shapeSelected.isShape(ShapeTypes.SELECT)) {
+        model.setSelector((ShapeSelector) shapeSelected);
+        model.printSelectedShape(posStart);
+      } else model.setSelector(null);
     });
 
     canvas.setOnMouseDragged(e -> {
@@ -314,30 +326,27 @@ public class Controller {
       Coord mouse = Coord.getCoordMouse(e, model.getToolSize());
       posCurrent = mouse;
 
-      if (shape instanceof Line) {
+      if (shapeSelected.isShape(ShapeTypes.LINE)) {
         //  Restaurer l'image précédente
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        gc.drawImage(previousImage, 0, 0); // Restaurer l'image précédente
+        gc.drawImage(previousImage, 0, 0);
 
-        model.drawLine(gc, posStart, posCurrent);
-
-        ((Line) shape).setEndX(posCurrent.x);
-        ((Line) shape).setEndY(posCurrent.y);
-      } else if (shape instanceof Rectangle) {
+        model.drawLine(posStart, posCurrent);
+      } else if (shapeSelected.isShape(ShapeTypes.RECTANGLE)) {
         // Restaurer l'image précédente
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
 
         // Dessiner le rectangle
         model.drawRectangle(gc, posStart, posCurrent);
-      } else if (shape instanceof Circle) {
+      } else if (shapeSelected.isShape(ShapeTypes.CIRCLE)) {
         // Restaurer l'image précédente
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
 
         // Dessiner le cercle
         model.drawCircle(gc, posStart, posCurrent);
-      } else if (shape instanceof Polygon) {
+      } else if (shapeSelected.isShape(ShapeTypes.TRIANGLE)) {
         // Restaurer l'image précédente
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
@@ -346,18 +355,16 @@ public class Controller {
         posOpposite.y = posCurrent.y;
 
         model.drawTriangle(gc, posStart, posCurrent, posOpposite);
-      } else {
-        double centerX = (posStart.x + posCurrent.x) / 2.0;
-        double centerY = (posStart.y + posCurrent.y) / 2.0;
-
-        gc.quadraticCurveTo(posStart.x, posStart.y, centerX, centerY);
-        gc.stroke();
-        gc.beginPath();
-        gc.moveTo(centerX, centerY);
+      } else if (shapeSelected.isShape(ShapeTypes.PEN)) {
+        model.drawPen(gc, posStart, posCurrent);
 
         posStart = posCurrent;
-        shapePen.addCoord(posCurrent);
-        previousImage = canvas.snapshot(null, null); // enregistrer la nouvelle image
+        shapeSelected.addCoord(posCurrent);
+
+        // Enregistrer la nouvelle image
+        previousImage = canvas.snapshot(null, null);
+      } else if (shapeSelected.isShape(ShapeTypes.SELECT)) {
+        model.moveShape(posCurrent);
       }
     });
 
@@ -366,32 +373,30 @@ public class Controller {
       Coord mouse = Coord.getCoordMouse(e, model.getToolSize());
       posCurrent = mouse;
 
-      if (shape instanceof Line) {
+      if (shapeSelected.isShape(ShapeTypes.LINE)) {
         // Restaurer l'image précédente
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
 
         // Dessiner la ligne
-        model.drawLine(gc, posStart, posCurrent);
-
+        model.drawLine(posStart, posCurrent);
+        shapeSelected.addCoord(posCurrent);
         // Definie les coordonnées de la ligne
-        ((Line) shape).setEndX(posCurrent.x);
-        ((Line) shape).setEndY(posCurrent.y);
-      } else if (shape instanceof Rectangle) {
+      } else if (shapeSelected.isShape(ShapeTypes.RECTANGLE)) {
         // Restaurer l'image précédente
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
 
         // Dessiner le rectangle
         model.drawRectangle(gc, posStart, posCurrent);
-      } else if (shape instanceof Circle) {
+      } else if (shapeSelected.isShape(ShapeTypes.CIRCLE)) {
         // Restaurer l'image précédente
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
 
         // Dessiner le cercle
         model.drawCircle(gc, posStart, posCurrent);
-      } else if (shape instanceof Circle) {
+      } else if (shapeSelected.isShape(ShapeTypes.TRIANGLE)) {
         // Restaurer l'image précédente
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
@@ -399,9 +404,10 @@ public class Controller {
         // Dessiner le triangle
         model.drawTriangle(gc, posStart, posCurrent, posOpposite);
       } else {
-        shapePen.addCoord(posCurrent);
-        Shapes.add(shapePen);
+        shapeSelected.addCoord(posCurrent);
       }
+
+      model.addShape(shapeSelected.copy());
     });
   }
 }

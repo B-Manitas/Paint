@@ -5,14 +5,26 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 
-public class ShapePen extends Shape {
+public class ShapePen extends Shape implements IShape {
 
+  private ShapeTypes type = ShapeTypes.PEN;
   private ArrayList<Coord> shapeCoord;
   private int toolSize;
 
-  public ShapePen(Coord C, Color color, int appSize) {
+  public ShapePen(Color color, int toolSize) {
     super();
-    this.toolSize = appSize;
+    this.toolSize = toolSize;
+    initializeCoord(new Coord());
+  }
+
+  private ShapePen(ArrayList<Coord> coords, int toolSize) {
+    this.shapeCoord = coords;
+    this.toolSize = toolSize;
+  }
+
+  public ShapePen(Coord C, Color color, int toolSize) {
+    super();
+    this.toolSize = toolSize;
     initializeCoord(C);
   }
 
@@ -38,6 +50,15 @@ public class ShapePen extends Shape {
         shapeCoord.add(new Coord(C.x + i, C.y + j));
       }
     }
+  }
+
+  public boolean isShape(ShapeTypes type) {
+    /**
+     * Retourne vrai si la forme est de type `type`.
+     *
+     * @param type Le type de forme à comparer
+     */
+    return this.type == type;
   }
 
   public void addCoord(Coord c) {
@@ -73,28 +94,27 @@ public class ShapePen extends Shape {
         double cpx = (pos1.x + pos2.x) / 2.0;
         double cpy = (pos1.y + pos2.y) / 2.0;
 
-			  gc.beginPath();
-			  gc.quadraticCurveTo(pos1.x, pos1.y, cpx,cpy);
-			  gc.stroke();
-			  gc.closePath();
-			  gc.moveTo(cpx, cpy);
-			}
-		  }
-	}
-
-  public boolean isInList(Coord c) {
-    /**
-     *
-     * @param c La coordonnée à vérifier
-     *
-     * @return true si la coordonnée est dans la liste, false sinon
-     */
-    for (int i = 0; i < shapeCoord.size(); i++) {
-      if (shapeCoord.get(i).x == c.x && shapeCoord.get(i).y == c.y) {
-        return (true);
+        gc.beginPath();
+        gc.quadraticCurveTo(pos1.x, pos1.y, cpx, cpy);
+        gc.stroke();
+        gc.closePath();
+        gc.moveTo(cpx, cpy);
       }
     }
-    return (false);
+  }
+
+  public Coord[] getSelectedCoords() {
+    Coord[] extrema = new Coord[2];
+
+    extrema[0] = shapeCoord.get(10);
+    extrema[1] = shapeCoord.get(10);
+
+    for (Coord coord : shapeCoord) {
+      if (coord.x < extrema[0].x && coord.y < extrema[0].y) extrema[0] = coord;
+      if (coord.x > extrema[1].x && coord.y > extrema[1].y) extrema[1] = coord;
+    }
+
+    return extrema;
   }
 
   public void deleteCoord(Coord c) {
@@ -103,7 +123,7 @@ public class ShapePen extends Shape {
      *
      * @param c La coordonnée à supprimer
      */
-    if (isInList(c)) {
+    if (isIn(c)) {
       shapeCoord.remove(c);
     }
   }
@@ -115,5 +135,17 @@ public class ShapePen extends Shape {
     for (int i = 0; i < shapeCoord.size(); i++) {
       System.out.println(shapeCoord.get(i).x + " " + shapeCoord.get(i).y);
     }
+  }
+
+  public boolean isIn(Coord c) {
+    return shapeCoord.contains(c);
+  }
+
+  public IShape copy() {
+    return new ShapePen(shapeCoord, toolSize);
+  }
+
+  public void moveTo(Coord mouse) {
+    // TODO Auto-generated method stub
   }
 }
