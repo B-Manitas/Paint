@@ -273,7 +273,7 @@ public class Controller {
     lblLog.setText("Cercle sélectionné");
     btnTriangle.setStyle(selectedStyle);
     btnShape.setStyle(selectedStyle);
-    // shape = new Polygon();
+    shapeSelected = new ShapeTriangle(posStart, model.getToolSize());
   }
 
   @FXML
@@ -351,10 +351,7 @@ public class Controller {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
 
-        posOpposite.x = posCurrent.x - posCurrent.distance(posStart);
-        posOpposite.y = posCurrent.y;
-
-        model.drawTriangle(posStart, posCurrent, posOpposite);
+        model.drawTriangle(posStart, posCurrent);
       } else if (shapeSelected.isShape(ShapeTypes.PEN)) {
         model.drawPen(posStart, posCurrent);
 
@@ -392,7 +389,7 @@ public class Controller {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
 
-        model.drawTriangle(posStart, posCurrent, posOpposite);
+        model.drawTriangle(posStart, posCurrent);
       } else {
         shapeSelected.addCoord(posCurrent);
       }

@@ -68,4 +68,8 @@ public class Coord {
   public Coord translate(int translate) {
     return new Coord(x + translate, y + translate);
   }
+
+  public Coord opposite(Coord c) {
+    return new Coord(c.x - c.distance(this), this.y);
+  }
 }

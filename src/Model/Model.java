@@ -130,7 +130,7 @@ public class Model {
     gc.strokeOval(start.x - radius, start.y - radius, radius * 2, radius * 2);
   }
 
-  public void drawTriangle(Coord x1, Coord x2, Coord x3) {
+  public void drawTriangle(Coord start, Coord end) {
     /**
      * Dessiner un triangle.
      *
@@ -142,8 +142,10 @@ public class Model {
     gc.setStroke(this.toolColor);
     gc.setLineWidth(this.toolSize);
 
-    double[] xPoints = new double[] { x1.x, x2.x, x3.x };
-    double[] yPoints = new double[] { x1.y, x2.y, x3.y };
+    Coord opp = start.opposite(end);
+
+    double[] xPoints = new double[] { start.x, end.x, opp.x };
+    double[] yPoints = new double[] { start.y, end.y, opp.y };
 
     gc.strokePolygon(xPoints, yPoints, 3);
   }
@@ -214,6 +216,9 @@ public class Model {
       } else if (iShape.isShape(ShapeTypes.RECTANGLE)) {
         ShapeRect iShapeRect = (ShapeRect) iShape;
         drawRectangle(iShapeRect.getStart(), iShapeRect.getEnd());
+      } else if (iShape.isShape(ShapeTypes.TRIANGLE)) {
+        ShapeTriangle iShapeTri = (ShapeTriangle) iShape;
+        drawTriangle(iShapeTri.getStart(), iShapeTri.getEnd());
       }
     }
   }
