@@ -35,10 +35,6 @@ public class Coord {
     return new Coord(posX, posY);
   }
 
-  public double getDistance(Coord point2) {
-    return (Math.sqrt(Math.pow(x - point2.x, 2) + Math.pow(y - point2.y, 2)));
-  }
-
   public void printCoord() {
     System.out.println("(" + this.x + ", " + this.y + ")");
   }

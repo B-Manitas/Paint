@@ -260,7 +260,7 @@ public class Controller {
     model.setColor(cPicker);
     lblLog.setText("Cercle sélectionné");
     btnCircle.setStyle(selectedStyle);
-    // shape = new Circle();
+    shapeSelected = new ShapeCircle(posStart, model.getToolSize());
   }
 
   @FXML
@@ -338,25 +338,25 @@ public class Controller {
         gc.drawImage(previousImage, 0, 0);
 
         // Dessiner le rectangle
-        model.drawRectangle(gc, posStart, posCurrent);
+        model.drawRectangle(posStart, posCurrent);
       } else if (shapeSelected.isShape(ShapeTypes.CIRCLE)) {
         // Restaurer l'image précédente
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
 
         // Dessiner le cercle
-        model.drawCircle(gc, posStart, posCurrent);
+        model.drawCircle(posStart, posCurrent);
       } else if (shapeSelected.isShape(ShapeTypes.TRIANGLE)) {
         // Restaurer l'image précédente
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
 
-        posOpposite.x = posCurrent.x - posCurrent.getDistance(posStart);
+        posOpposite.x = posCurrent.x - posCurrent.distance(posStart);
         posOpposite.y = posCurrent.y;
 
-        model.drawTriangle(gc, posStart, posCurrent, posOpposite);
+        model.drawTriangle(posStart, posCurrent, posOpposite);
       } else if (shapeSelected.isShape(ShapeTypes.PEN)) {
-        model.drawPen(gc, posStart, posCurrent);
+        model.drawPen(posStart, posCurrent);
 
         posStart = posCurrent;
         shapeSelected.addCoord(posCurrent);
@@ -388,21 +388,22 @@ public class Controller {
         gc.drawImage(previousImage, 0, 0);
 
         // Dessiner le rectangle
-        model.drawRectangle(gc, posStart, posCurrent);
+        model.drawRectangle(posStart, posCurrent);
       } else if (shapeSelected.isShape(ShapeTypes.CIRCLE)) {
         // Restaurer l'image précédente
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
-
+        
         // Dessiner le cercle
-        model.drawCircle(gc, posStart, posCurrent);
+        model.drawCircle(posStart, posCurrent);
+        shapeSelected.addCoord(posCurrent);
       } else if (shapeSelected.isShape(ShapeTypes.TRIANGLE)) {
         // Restaurer l'image précédente
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
 
         // Dessiner le triangle
-        model.drawTriangle(gc, posStart, posCurrent, posOpposite);
+        model.drawTriangle(posStart, posCurrent, posOpposite);
       } else {
         shapeSelected.addCoord(posCurrent);
       }

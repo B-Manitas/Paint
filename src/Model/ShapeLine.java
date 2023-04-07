@@ -1,21 +1,17 @@
 package Model;
 
-import javafx.scene.shape.Shape;
-
-public class ShapeLine extends Shape implements IShape {
+public class ShapeLine implements IShape {
 
   private ShapeTypes type = ShapeTypes.LINE;
   private int toolSize;
   private Coord start, end;
 
   public ShapeLine(Coord c, int toolSize) {
-    super();
     this.toolSize = toolSize;
     start = c;
   }
 
   private ShapeLine(Coord posStart, Coord posEnd, int toolSize) {
-    super();
     this.toolSize = toolSize;
     this.start = posStart;
     this.end = posEnd;

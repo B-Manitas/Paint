@@ -3,9 +3,8 @@ package Model;
 import java.util.ArrayList;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Shape;
 
-public class ShapePen extends Shape implements IShape {
+public class ShapePen implements IShape {
 
   private ShapeTypes type = ShapeTypes.PEN;
   private ArrayList<Coord> shapeCoord;
