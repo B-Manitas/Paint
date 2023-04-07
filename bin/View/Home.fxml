@@ -10,7 +10,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
@@ -25,7 +24,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="722.0" prefWidth="1100.0" style="-fx-background-color: #f4f4f4;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1300.0" style="-fx-background-color: #f4f4f4;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
    <children>
       <HBox alignment="CENTER" layoutX="325.0" layoutY="175.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <padding>
@@ -141,41 +140,36 @@
                         <Color />
                      </value>
                   </ColorPicker>
-                  <MenuButton fx:id="btnSize" mnemonicParsing="false" prefHeight="40.0" prefWidth="66.0" style="-fx-background-color: transparent;" text="2px">
-                     <items>
-                        <CustomMenuItem mnemonicParsing="false">
-                           <content>
-                              <HBox>
-                                 <children>
-                                    <RadioButton mnemonicParsing="false" onAction="#selectSize" selected="true" text="2px">
-                                       <HBox.margin>
-                                          <Insets left="5.0" right="5.0" />
-                                       </HBox.margin>
-                                       <toggleGroup>
-                                          <ToggleGroup fx:id="groupSize" />
-                                       </toggleGroup>
-                                    </RadioButton>
-                                    <RadioButton mnemonicParsing="false" onAction="#selectSize" text="5px" toggleGroup="$groupSize">
-                                       <HBox.margin>
-                                          <Insets left="5.0" right="5.0" />
-                                       </HBox.margin>
-                                    </RadioButton>
-                                    <RadioButton mnemonicParsing="false" onAction="#selectSize" text="10px" toggleGroup="$groupSize">
-                                       <HBox.margin>
-                                          <Insets left="5.0" right="5.0" />
-                                       </HBox.margin>
-                                    </RadioButton>
-                                    <RadioButton mnemonicParsing="false" onAction="#selectSize" text="15px" toggleGroup="$groupSize">
-                                       <HBox.margin>
-                                          <Insets left="5.0" right="5.0" />
-                                       </HBox.margin>
-                                    </RadioButton>
-                                 </children>
-                              </HBox>
-                           </content>
-                        </CustomMenuItem>
-                     </items>
-                  </MenuButton>
+                  <HBox alignment="CENTER" prefHeight="8.0" prefWidth="68.0">
+                     <children>
+                        <TextField fx:id="inputSize" alignment="CENTER" onAction="#listenSize" prefHeight="30.0" prefWidth="37.0" text="2" />
+                        <VBox prefHeight="48.0" prefWidth="16.0">
+                           <children>
+                              <Button fx:id="upSize" mnemonicParsing="false" onAction="#increaseSize" style="-fx-background-color: transparent;">
+                                 <graphic>
+                                    <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@assets/icon/up.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </Button>
+                              <Button fx:id="downSize" mnemonicParsing="false" onAction="#decreaseSize" prefHeight="24.0" prefWidth="31.0" style="-fx-background-color: transparent;">
+                                 <graphic>
+                                    <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true" rotate="180.0">
+                                       <image>
+                                          <Image url="@assets/icon/up.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </Button>
+                           </children>
+                           <HBox.margin>
+                              <Insets right="5.0" />
+                           </HBox.margin>
+                        </VBox>
+                     </children>
+                  </HBox>
                   <Separator orientation="VERTICAL" prefHeight="48.0" prefWidth="0.0" />
                   <Button fx:id="btnEraser" mnemonicParsing="false" onAction="#selectEraser" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
                      <graphic>
@@ -228,68 +222,62 @@
             </HBox>
          </children>
       </HBox>
+      <HBox alignment="CENTER" prefHeight="40.0" prefWidth="1280.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="10.0">
+         <children>
+            <Label prefHeight="25.0" prefWidth="192.0" text="Information :" underline="true">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="lblLog" prefHeight="25.0" prefWidth="1182.0" text="...">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
       <Pane prefHeight="636.0" prefWidth="873.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="90.0">
          <children>
-            <Canvas fx:id="canvas" height="582.0" width="1080.0" />
-            <Pane layoutX="14.0" layoutY="520.0">
+            <Canvas fx:id="canvas" height="660.0" width="1290.0" />
+            <Pane layoutX="14.0" layoutY="520.0" />
+            <HBox alignment="CENTER" layoutX="14.0" layoutY="598.0" style="-fx-border-radius: 5; -fx-background-radius: 5; -fx-background-color: #fafafa;">
                <children>
-                  <HBox alignment="CENTER" style="-fx-border-radius: 5; -fx-background-radius: 5; -fx-background-color: #fafafa;">
-                     <children>
-                        <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
-                           <graphic>
-                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@assets/icon/minus.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                           <HBox.margin>
-                              <Insets bottom="3.0" left="3.0" right="3.0" top="5.0" />
-                           </HBox.margin>
-                        </Button>
-                        <Pane HBox.hgrow="ALWAYS">
-                           <children>
-                              <Text layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="100%" textAlignment="CENTER" textOrigin="CENTER" wrappingWidth="78.0">
-                                 <font>
-                                    <Font size="22.0" />
-                                 </font>
-                              </Text>
-                           </children>
-                           <HBox.margin>
-                              <Insets bottom="3.0" left="3.0" right="3.0" top="5.0" />
-                           </HBox.margin>
-                        </Pane>
-                        <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
-                           <graphic>
-                              <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@assets/icon/plus.png" />
-                                 </image>
-                              </ImageView>
-                           </graphic>
-                           <HBox.margin>
-                              <Insets bottom="3.0" left="3.0" right="3.0" top="5.0" />
-                           </HBox.margin>
-                        </Button>
-                     </children>
-                  </HBox>
-               </children>
-            </Pane>
-            <HBox alignment="CENTER" layoutY="597.0" prefHeight="25.0" prefWidth="980.0">
-               <children>
-                  <Label prefHeight="25.0" prefWidth="426.0" text="Information :" underline="true">
+                  <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@assets/icon/minus.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
                      <HBox.margin>
-                        <Insets right="10.0" />
+                        <Insets bottom="3.0" left="3.0" right="3.0" top="5.0" />
                      </HBox.margin>
-                     <font>
-                        <Font name="System Bold" size="16.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="lblLog" prefHeight="25.0" prefWidth="1182.0" text="...">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
+                  </Button>
+                  <Pane HBox.hgrow="ALWAYS">
+                     <children>
+                        <Text layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="100%" textAlignment="CENTER" textOrigin="CENTER" wrappingWidth="78.0">
+                           <font>
+                              <Font size="22.0" />
+                           </font>
+                        </Text>
+                     </children>
+                     <HBox.margin>
+                        <Insets bottom="3.0" left="3.0" right="3.0" top="5.0" />
+                     </HBox.margin>
+                  </Pane>
+                  <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@assets/icon/plus.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <HBox.margin>
+                        <Insets bottom="3.0" left="3.0" right="3.0" top="5.0" />
+                     </HBox.margin>
+                  </Button>
                </children>
             </HBox>
          </children>
