@@ -2,6 +2,8 @@ import Model.Coord;
 import Model.Model;
 import Model.ShapePen;
 import java.io.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import java.util.ArrayList;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
@@ -32,8 +34,13 @@ public class Controller {
   public ShapePen shapePen;
   public ArrayList<Shape> Shapes = new ArrayList<Shape>();
   private Image previousImage;
+  public static boolean halfCtrlSPressed=false;
+  public static boolean halfCtrlNPressed=false;
+  public static boolean halfCtrlOPressed=false;
+  public static boolean halfCtrlWPressed=false;
 
   // Déclare les attributs de la vue
+
   @FXML
   private Canvas canvas;
 
@@ -56,7 +63,7 @@ public class Controller {
   private TextField inputSize;
 
   @FXML
-  private Button btnEraser, btnPen, upSize, downSize;
+  private Button btnEraser, btnPen, upSize, downSize, btnHelp, btnCloseHelp;
 
   @FXML
   private ToggleGroup groupSize;
@@ -65,10 +72,52 @@ public class Controller {
   private ColorPicker cPicker;
 
   @FXML
+  private DialogPane helpPane;
+
+  @FXML
+  public void handle(KeyEvent ke) {
+    /**
+     * Raccourcis clavier
+     */
+    // Ctrl + S
+    if (ke.getCode() == KeyCode.CONTROL) {halfCtrlSPressed = true;} 
+    else if (ke.getCode() == KeyCode.S && halfCtrlSPressed) {halfCtrlSPressed = false; onSave(null);}
+    else {halfCtrlSPressed = false;}
+    // Ctrl + N
+    if (ke.getCode() == KeyCode.CONTROL) {halfCtrlNPressed = true;}
+    else if (ke.getCode() == KeyCode.N && halfCtrlNPressed) {halfCtrlNPressed = false; onNew(null);}
+    else {halfCtrlNPressed = false;}
+    // Ctrl + O
+    if (ke.getCode() == KeyCode.CONTROL) {halfCtrlOPressed = true;}
+    else if (ke.getCode() == KeyCode.O && halfCtrlOPressed) {halfCtrlOPressed = false; onOpen(null);}
+    else {halfCtrlOPressed = false;}
+    //Ctrl + W
+    if (ke.getCode() == KeyCode.CONTROL) {halfCtrlWPressed = true;}
+    else if (ke.getCode() == KeyCode.W && halfCtrlWPressed) {halfCtrlWPressed = false; onExit(null);}
+    else {halfCtrlWPressed = false;}
+}
+
+  @FXML
+  void setfileTitle(ActionEvent event) {
+    model.setfileTitle(fileTitle.getText());
+  }
+
+  @FXML
   void onNew(ActionEvent event) {
     /**
      * Nouveau fichier
      */
+    // Vérifier si le canvas n'est pas vide, et propose de sauvegarder
+    if (!model.isCanvasEmpty(canvas)) {
+      boolean result = model.showSaveAlert();
+      if (result==true){onSave(event);}
+    }
+    // Vider le canvas
+    model.clearCanvas(canvas);
+    // Réinitialiser les attributs
+    model.resetAttributes();
+    cancelStyle();
+    btnPen.setStyle(selectedStyle);
     lblLog.setText("Nouveau fichier");
   }
 
@@ -77,7 +126,39 @@ public class Controller {
     /**
      * Ouvrir un fichier
      */
-    lblLog.setText("Ouverture d'un fichier");
+    // Vérifier si le canvas n'est pas vide, et propose de sauvegarder
+    if (!model.isCanvasEmpty(canvas)) {
+      boolean result = model.showSaveAlert();
+      if (result){onSave(event);}
+    }
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.setTitle("Ouvrir un fichier PNG");
+    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers PNG", "*.png"));
+    File file = fileChooser.showOpenDialog(canvas.getScene().getWindow());
+
+    if (file != null) {
+        // Charger l'image depuis le fichier
+        Image image = new Image(file.toURI().toString());
+        model.setfileTitle(file.getName().replace(".png", ""));
+        fileTitle.setText(model.getfileTitle());
+
+        // Redimensionner l'image à la taille du canva
+        double targetWidth = canvas.getWidth();
+        double targetHeight = canvas.getHeight();
+        double scaleFactor = Math.min(targetWidth / image.getWidth(), targetHeight / image.getHeight());
+        double scaledWidth = image.getWidth() * scaleFactor;
+        double scaledHeight = image.getHeight() * scaleFactor;
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(scaledWidth);
+        imageView.setFitHeight(scaledHeight);
+
+        // Dessiner l'image redimensionnée sur le canvas
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.drawImage(imageView.snapshot(null, null), 0, 0);
+        cancelStyle();
+        btnPen.setStyle(selectedStyle);
+    }
   }
 
   @FXML
@@ -100,9 +181,8 @@ public class Controller {
     // Créer un objet File pour enregistrer l'image en PNG
     FileChooser fileChooser = new FileChooser();
     fileChooser.setTitle("Enregistrer en tant qu'image PNG");
-    fileChooser
-      .getExtensionFilters()
-      .add(new FileChooser.ExtensionFilter("Fichiers PNG", "*.png"));
+    fileChooser.setInitialFileName(model.getfileTitle() + ".png");
+    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers PNG", "*.png"));
     File file = fileChooser.showSaveDialog(stage);
 
     if (file != null) {
@@ -122,9 +202,22 @@ public class Controller {
     /**
      * Fermer l'application.
      */
-    // TODO: Afficher une boîte de dialogue pour confirmer la fermeture de l'application
+    // Vérifier si le canvas n'est pas vide, et propose de sauvegarder
+    if (!model.isCanvasEmpty(canvas)) {
+      boolean result = model.showSaveAlert();
+      if (result==true){onSave(event);}
+    }
     lblLog.setText("Fermeture de l'application");
     Platform.exit();
+  }
+
+  @FXML 
+  void onHelp(ActionEvent event) {
+    /**
+     * Afficher l'aide.
+     */
+    if (helpPane.isVisible() == true) {helpPane.setVisible(false);}
+    else {helpPane.setVisible(true);}
   }
 
   @FXML
@@ -156,7 +249,6 @@ public class Controller {
       if (newSize < 1 || newSize > 20) {
         throw new NumberFormatException();
       }
-
       model.setToolSize(newSize);
       lblLog.setText("Taille modifiée");
       inputSize.setText(model.getToolSizeStr());
