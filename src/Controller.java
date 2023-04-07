@@ -1,6 +1,6 @@
 import Model.Coord;
 import Model.Model;
-import Model.PenShape;
+import Model.ShapePen;
 import java.io.*;
 import java.util.ArrayList;
 import javafx.application.Platform;
@@ -29,7 +29,7 @@ public class Controller {
   public Coord posStart = Coord.createCoord(0, 0);
   public Coord posCurrent = Coord.createCoord(0, 0);
   public Coord posOpposite = Coord.createCoord(0, 0);
-  public PenShape penShape;
+  public ShapePen shapePen;
   public ArrayList<Shape> Shapes = new ArrayList<Shape>();
   private Image previousImage;
 
@@ -298,7 +298,7 @@ public class Controller {
       posCurrent = posStart;
 
       // Créer une nouvelle forme pinceau
-      penShape = new PenShape(posStart, model.getColor(), model.getToolSize());
+      shapePen = new ShapePen(posStart, model.getColor(), model.getToolSize());
 
       gc.setStroke(model.getColor());
       gc.setLineWidth(model.getToolSize());
@@ -356,7 +356,7 @@ public class Controller {
         gc.moveTo(centerX, centerY);
 
         posStart = posCurrent;
-        penShape.addCoord(posCurrent);
+        shapePen.addCoord(posCurrent);
         previousImage = canvas.snapshot(null, null); // enregistrer la nouvelle image
       }
     });
@@ -399,8 +399,8 @@ public class Controller {
         // Dessiner le triangle
         model.drawTriangle(gc, posStart, posCurrent, posOpposite);
       } else {
-        penShape.addCoord(posCurrent);
-        Shapes.add(penShape);
+        shapePen.addCoord(posCurrent);
+        Shapes.add(shapePen);
       }
     });
   }

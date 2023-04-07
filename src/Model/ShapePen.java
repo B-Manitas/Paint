@@ -5,12 +5,12 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 
-public class PenShape extends Shape {
+public class ShapePen extends Shape {
 
   private ArrayList<Coord> shapeCoord;
   private int toolSize;
 
-  public PenShape(Coord C, Color color, int appSize) {
+  public ShapePen(Coord C, Color color, int appSize) {
     super();
     this.toolSize = appSize;
     initializeCoord(C);
