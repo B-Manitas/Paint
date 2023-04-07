@@ -11,27 +11,39 @@ public class Model {
   private int toolSize = 1;
 
   public void setColor(Color color) {
-    toolColor = color;
+    this.toolColor = color;
   }
 
   public void setColor(ColorPicker cPicker) {
-    toolColor = cPicker.getValue();
+    this.toolColor = cPicker.getValue();
   }
 
   public void setToolSize(int size) {
-    toolSize = size;
+    this.toolSize = size;
   }
 
   public void setToolSize(String size) {
-    toolSize = Integer.parseInt(size.replace("px", ""));
+    this.toolSize = Integer.parseInt(size.replace("px", ""));
   }
 
   public Color getColor() {
-    return toolColor;
+    return this.toolColor;
+  }
+
+  public String getToolSizeStr() {
+    return Integer.toString(this.toolSize);
   }
 
   public int getToolSize() {
-    return toolSize;
+    return this.toolSize;
+  }
+
+  public void increaseToolSize() {
+    this.toolSize++;
+  }
+
+  public void decreaseToolSize() {
+    this.toolSize--;
   }
 
   public ArrayList<Coord> getNeighbors(Coord c) {
@@ -52,8 +64,8 @@ public class Model {
      * @param start Les coordonnées de départ
      * @param end Les coordonnées d'arrivée
      */
-    gc.setStroke(toolColor);
-    gc.setLineWidth(toolSize);
+    gc.setStroke(this.toolColor);
+    gc.setLineWidth(this.toolSize);
     gc.strokeLine(start.x, start.y, end.x, end.y);
   }
 
@@ -65,8 +77,8 @@ public class Model {
      * @param start Les coordonnées de départ
      * @param end Les coordonnées d'arrivée
      */
-    gc.setStroke(toolColor);
-    gc.setLineWidth(toolSize);
+    gc.setStroke(this.toolColor);
+    gc.setLineWidth(this.toolSize);
 
     double width = Math.abs(start.x - end.x);
     double height = Math.abs(start.y - end.y);
@@ -84,8 +96,8 @@ public class Model {
      * @param start Les coordonnées de départ
      * @param end Les coordonnées d'arrivée
      */
-    gc.setStroke(toolColor);
-    gc.setLineWidth(toolSize);
+    gc.setStroke(this.toolColor);
+    gc.setLineWidth(this.toolSize);
 
     double radius = start.getDistance(end);
     double centerX = start.x;
@@ -103,8 +115,8 @@ public class Model {
      * @param x2 Les coordonnées du deuxième point
      * @param x3 Les coordonnées du troisième point
      */
-    gc.setStroke(toolColor);
-    gc.setLineWidth(toolSize);
+    gc.setStroke(this.toolColor);
+    gc.setLineWidth(this.toolSize);
 
     double[] xPoints = new double[] { x1.x, x2.x, x3.x };
     double[] yPoints = new double[] { x1.y, x2.y, x3.y };

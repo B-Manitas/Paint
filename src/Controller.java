@@ -100,16 +100,16 @@ public class Controller {
     // Créer un objet File pour enregistrer l'image en PNG
     FileChooser fileChooser = new FileChooser();
     fileChooser.setTitle("Enregistrer en tant qu'image PNG");
-    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers PNG", "*.png"));
+    fileChooser
+      .getExtensionFilters()
+      .add(new FileChooser.ExtensionFilter("Fichiers PNG", "*.png"));
     File file = fileChooser.showSaveDialog(stage);
 
     if (file != null) {
       try {
         ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
         lblLog.setText("Fichier enregistré sous " + file.getName());
-      } 
-      
-      catch (IOException ex) {
+      } catch (IOException ex) {
         lblLog.setText("Erreur lors de l'enregistrement du fichier.");
         ex.printStackTrace();
       }
@@ -143,57 +143,51 @@ public class Controller {
      */
     RadioButton selectedSize = (RadioButton) groupSize.getSelectedToggle();
     String strSize = selectedSize.getText();
-    
+
     model.setToolSize(strSize);
     btnSize.setText(selectedSize.getText());
-
   }
-  
+
   public void listenSize() {
-        String text = inputSize.getText();
-        try {
-            int newSize = Integer.parseInt(text);
-            if (newSize < 1 || newSize > 20) {
-                throw new NumberFormatException();
-            }
+    String text = inputSize.getText();
+    try {
+      int newSize = Integer.parseInt(text);
+      if (newSize < 1 || newSize > 20) {
+        throw new NumberFormatException();
+      }
 
-            model.setToolSize(newSize);
-            lblLog.setText("Taille modifiée");
-            inputSize.setText(Integer.toString(model.getToolSize()));
-        } 
-        
-        catch (NumberFormatException ex) {
-            inputSize.setText(Integer.toString(model.getToolSize()));
-            lblLog.setText("Veuillez entrer un nombre valide.");
-        }
+      model.setToolSize(newSize);
+      lblLog.setText("Taille modifiée");
+      inputSize.setText(model.getToolSizeStr());
+    } catch (NumberFormatException ex) {
+      inputSize.setText(model.getToolSizeStr());
+      lblLog.setText("Veuillez entrer un nombre valide.");
+    }
   }
 
   @FXML
-  public void increaseSize(ActionEvent event) {
-    if(model.getToolSize()==20){return;}
-    model.setToolSize(model.getToolSize() + 1);
-    inputSize.setText(Integer.toString(model.getToolSize()));
-    lblLog.setText("Taille augtmentée");
+  public void onPressIncreaseToolSize(ActionEvent event) {
+    /**
+     * Augmenter la taille de l'outil.
+     */
+    if (model.getToolSize() != 20) {
+      model.increaseToolSize();
+      inputSize.setText(Integer.toString(model.getToolSize()));
+      lblLog.setText("Taille augtmentée");
+    }
   }
 
   @FXML
-  public void decreaseSize(ActionEvent event) {
-    if(model.getToolSize()==1){return;}
-    model.setToolSize(model.getToolSize() - 1);
-    inputSize.setText(Integer.toString(model.getToolSize()));
-    lblLog.setText("Taille diminuée");
+  public void onPressDecreaseToolSize(ActionEvent event) {
+    /**
+     * Diminuer la taille de l'outil.
+     */
+    if (model.getToolSize() != 1) {
+      model.decreaseToolSize();
+      inputSize.setText(model.getToolSizeStr());
+      lblLog.setText("Taille diminuée");
+    }
   }
-
-  // @FXML
-  // void selectSize(ActionEvent event) {
-  //   RadioButton selectedSize = (RadioButton) groupSize.getSelectedToggle();
-  //   String strSize = selectedSize.getText();
-
-  //   appSize = Integer.parseInt(strSize.replace("px", ""));
-  //   btnSize.setText(selectedSize.getText());
-
-  //   lblLog.setText("Taille modifiée");
-  // }
 
   @FXML
   void selectPen(ActionEvent event) {
@@ -252,7 +246,7 @@ public class Controller {
      */
     cancelStyle();
     model.setColor(cPicker);
-    
+
     lblLog.setText("Rectangle sélectionné");
     btnRect.setStyle(selectedStyle);
     btnShape.setStyle(selectedStyle);
@@ -294,7 +288,6 @@ public class Controller {
     btnShape.setStyle(defaultStyle);
   }
 
-
   @FXML
   public void initialize() {
     GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -323,45 +316,37 @@ public class Controller {
 
       if (shape instanceof Line) {
         //  Restaurer l'image précédente
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight()); 
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0); // Restaurer l'image précédente
-       
+
         model.drawLine(gc, posStart, posCurrent);
-       
+
         ((Line) shape).setEndX(posCurrent.x);
         ((Line) shape).setEndY(posCurrent.y);
-      } 
-      
-      else if (shape instanceof Rectangle) {
+      } else if (shape instanceof Rectangle) {
         // Restaurer l'image précédente
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight()); 
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
-        
+
         // Dessiner le rectangle
         model.drawRectangle(gc, posStart, posCurrent);
-      } 
-      
-      else if (shape instanceof Circle) {
+      } else if (shape instanceof Circle) {
         // Restaurer l'image précédente
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight()); 
-        gc.drawImage(previousImage, 0, 0); 
-        
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.drawImage(previousImage, 0, 0);
+
         // Dessiner le cercle
         model.drawCircle(gc, posStart, posCurrent);
-      } 
-      
-      else if (shape instanceof Polygon) {
+      } else if (shape instanceof Polygon) {
         // Restaurer l'image précédente
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight()); 
-        gc.drawImage(previousImage, 0, 0); 
-        
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.drawImage(previousImage, 0, 0);
+
         posOpposite.x = posCurrent.x - posCurrent.getDistance(posStart);
         posOpposite.y = posCurrent.y;
-        
+
         model.drawTriangle(gc, posStart, posCurrent, posOpposite);
-      } 
-      
-      else {
+      } else {
         double centerX = (posStart.x + posCurrent.x) / 2.0;
         double centerY = (posStart.y + posCurrent.y) / 2.0;
 
@@ -383,7 +368,7 @@ public class Controller {
 
       if (shape instanceof Line) {
         // Restaurer l'image précédente
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight()); 
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
 
         // Dessiner la ligne
@@ -392,40 +377,31 @@ public class Controller {
         // Definie les coordonnées de la ligne
         ((Line) shape).setEndX(posCurrent.x);
         ((Line) shape).setEndY(posCurrent.y);
-      } 
-      
-      else if (shape instanceof Rectangle) {
+      } else if (shape instanceof Rectangle) {
         // Restaurer l'image précédente
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight()); 
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
-        
+
         // Dessiner le rectangle
         model.drawRectangle(gc, posStart, posCurrent);
-      } 
-      
-      else if (shape instanceof Circle) {
+      } else if (shape instanceof Circle) {
         // Restaurer l'image précédente
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight()); 
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
-        
+
         // Dessiner le cercle
         model.drawCircle(gc, posStart, posCurrent);
-      } 
-      
-      else if (shape instanceof Circle) {
+      } else if (shape instanceof Circle) {
         // Restaurer l'image précédente
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight()); 
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
-        
+
         // Dessiner le triangle
         model.drawTriangle(gc, posStart, posCurrent, posOpposite);
-      } 
-      
-      else {
+      } else {
         penShape.addCoord(posCurrent);
         Shapes.add(penShape);
       }
     });
-
   }
 }
