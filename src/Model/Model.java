@@ -182,7 +182,7 @@ public class Model {
   public void printSelectedShape(Coord mouse) {
     shapeSelected = null;
     redraw();
-    
+
     for (int i = shapes.size() - 1; i >= 0; i--) {
       IShape iShape = shapes.get(i);
 
@@ -211,6 +211,9 @@ public class Model {
       } else if (iShape.isShape(ShapeTypes.CIRCLE)) {
         ShapeCircle iShapeCircle = (ShapeCircle) iShape;
         drawCircle(iShapeCircle.getCenter(), iShapeCircle.getRadiusCoord());
+      } else if (iShape.isShape(ShapeTypes.RECTANGLE)) {
+        ShapeRect iShapeRect = (ShapeRect) iShape;
+        drawRectangle(iShapeRect.getStart(), iShapeRect.getEnd());
       }
     }
   }

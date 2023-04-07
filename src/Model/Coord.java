@@ -50,6 +50,11 @@ public class Coord {
     ); else return false;
   }
 
+  public void moveTo(Coord c) {
+    this.x += c.x;
+    this.y += c.y;
+  }
+
   public void moveTo(int translate) {
     this.x += translate;
     this.y += translate;

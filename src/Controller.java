@@ -247,7 +247,7 @@ public class Controller {
     lblLog.setText("Rectangle sélectionné");
     btnRect.setStyle(selectedStyle);
     btnShape.setStyle(selectedStyle);
-    // shape = new Rectangle();
+    shapeSelected = new ShapeRect(posStart, model.getToolSize());
   }
 
   @FXML
@@ -374,40 +374,30 @@ public class Controller {
       posCurrent = mouse;
 
       if (shapeSelected.isShape(ShapeTypes.LINE)) {
-        // Restaurer l'image précédente
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
 
-        // Dessiner la ligne
         model.drawLine(posStart, posCurrent);
-        shapeSelected.addCoord(posCurrent);
-        // Definie les coordonnées de la ligne
       } else if (shapeSelected.isShape(ShapeTypes.RECTANGLE)) {
-        // Restaurer l'image précédente
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
 
-        // Dessiner le rectangle
         model.drawRectangle(posStart, posCurrent);
       } else if (shapeSelected.isShape(ShapeTypes.CIRCLE)) {
-        // Restaurer l'image précédente
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        gc.drawImage(previousImage, 0, 0);
-        
-        // Dessiner le cercle
-        model.drawCircle(posStart, posCurrent);
-        shapeSelected.addCoord(posCurrent);
-      } else if (shapeSelected.isShape(ShapeTypes.TRIANGLE)) {
-        // Restaurer l'image précédente
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
 
-        // Dessiner le triangle
+        model.drawCircle(posStart, posCurrent);
+      } else if (shapeSelected.isShape(ShapeTypes.TRIANGLE)) {
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.drawImage(previousImage, 0, 0);
+
         model.drawTriangle(posStart, posCurrent, posOpposite);
       } else {
         shapeSelected.addCoord(posCurrent);
       }
 
+      shapeSelected.addCoord(posCurrent);
       model.addShape(shapeSelected.copy());
     });
   }
