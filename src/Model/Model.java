@@ -8,7 +8,7 @@ import javafx.scene.paint.Color;
 public class Model {
 
   private Color toolColor = Color.BLACK;
-  private int toolSize = 1;
+  private int toolSize = 2;
 
   public void setColor(Color color) {
     toolColor = color;

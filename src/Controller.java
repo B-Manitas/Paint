@@ -149,6 +149,7 @@ public class Controller {
 
   }
   
+  @FXML
   public void listenSize() {
         String text = inputSize.getText();
         try {
