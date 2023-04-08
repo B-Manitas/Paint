@@ -4,26 +4,20 @@ import java.util.ArrayList;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
-public class ShapePen implements IShape {
+public class ToolsPen implements ITools {
 
-  private ShapeTypes type = ShapeTypes.PEN;
+  private static ToolsTypes type = ToolsTypes.PEN;
   private ArrayList<Coord> shapeCoord;
-  private Coord start;
   private int toolSize;
   private Color toolColor;
 
-  public ShapePen(Color color, int toolSize) {
+  public ToolsPen(Color color, int toolSize) {
     super();
     this.toolSize = toolSize;
     initializeCoord(new Coord());
   }
 
-  private ShapePen(ArrayList<Coord> coords, int toolSize) {
-    this.shapeCoord = coords;
-    this.toolSize = toolSize;
-  }
-
-  public ShapePen(Coord C, Color color, int toolSize) {
+  public ToolsPen(Coord C, Color color, int toolSize) {
     super();
     this.toolSize = toolSize;
     initializeCoord(C);
@@ -37,36 +31,12 @@ public class ShapePen implements IShape {
     return this.toolSize;
   }
 
-  public Coord getStartCoord() {
-    // TODO Auto-generated method stub
-    return this.start;
-  }
-
-  public Coord getEndCoord() {
-    // TODO Auto-generated method stub
-    return this.start;
-  }
-
   public void setToolColor(Color color) {
     this.toolColor = color;
   }
 
   public void setToolSize(int size) {
     this.toolSize = size;
-  }
-
-  public void draw(GraphicsContext gc) {
-    /**
-     * Dessine la forme.
-     *
-     * @param gc Le contexte graphique
-     */
-    // TODO Auto-generated method stub
-  }
-
-  public void setEndCoord(Coord end) {
-    // TODO Auto-generated method stub
-
   }
 
   public ArrayList<Coord> getShapeCoord() {
@@ -80,8 +50,6 @@ public class ShapePen implements IShape {
     /**
      * Initialise la liste de coordonnées de la forme.
      */
-    start = c;
-
     shapeCoord = new ArrayList<Coord>();
     shapeCoord.add(c);
 
@@ -95,13 +63,13 @@ public class ShapePen implements IShape {
     }
   }
 
-  public boolean isShape(ShapeTypes type) {
+  public boolean isTool(ToolsTypes type) {
     /**
      * Retourne vrai si la forme est de type `type`.
      *
      * @param type Le type de forme à comparer
      */
-    return this.type == type;
+    return ToolsPen.type == type;
   }
 
   public void addCoord(Coord c) {
@@ -182,10 +150,6 @@ public class ShapePen implements IShape {
 
   public boolean isIn(Coord c) {
     return shapeCoord.contains(c);
-  }
-
-  public IShape copy() {
-    return new ShapePen(shapeCoord, toolSize);
   }
 
   public void moveTo(Coord mouse) {

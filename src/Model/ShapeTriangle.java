@@ -112,7 +112,8 @@ public class ShapeTriangle implements IShape {
     double[] xPoints = new double[] { start.x, end.x, opp.x };
     double[] yPoints = new double[] { start.y, end.y, opp.y };
 
-    gc.strokePolygon(xPoints, yPoints, 3);
+    gc.setFill(toolColor);
+    gc.fillPolygon(xPoints, yPoints, 3);
   }
 
   public void setEndCoord(Coord end) {

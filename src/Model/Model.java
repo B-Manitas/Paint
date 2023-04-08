@@ -5,17 +5,20 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 
 public class Model {
 
   private Color toolColor = Color.BLACK;
-  private int toolSize = 12;
+  private int toolSize = 2;
   private ArrayList<IShape> shapes = new ArrayList<IShape>();
   private GraphicsContext gc;
   private Canvas canvas;
   private IShape shapeSelected;
-  private Button btnToBack, btnToFront;
+  private Button btnBack, btnFront;
+  private ColorPicker cPicker;
+  private TextField inputSize;
 
   public void addShape(IShape shape) {
     if (!shape.isShape(ShapeTypes.SELECT)) {
@@ -25,8 +28,8 @@ public class Model {
   }
 
   public void setBtns(Button btnBack, Button btnFront) {
-    this.btnToBack = btnBack;
-    this.btnToFront = btnFront;
+    this.btnBack = btnBack;
+    this.btnFront = btnFront;
   }
 
   public void setGraphicsContext(GraphicsContext gc) {
@@ -43,14 +46,32 @@ public class Model {
 
   public void setColor(ColorPicker cPicker) {
     this.toolColor = cPicker.getValue();
+
+    if (shapeSelected != null) {
+      shapeSelected.setToolColor(toolColor);
+      redraw();
+    }
+  }
+
+  public void setCPicker(ColorPicker cPicker) {
+    this.cPicker = cPicker;
+  }
+
+  public void setInputSize(TextField inputSize) {
+    this.inputSize = inputSize;
   }
 
   public void setToolSize(int size) {
     this.toolSize = size;
+
+    if (shapeSelected != null) {
+      shapeSelected.setToolSize(size);
+      redraw();
+    }
   }
 
   public void setToolSize(String size) {
-    this.toolSize = Integer.parseInt(size.replace("px", ""));
+    this.toolSize = Integer.parseInt(size);
   }
 
   public Color getColor() {
@@ -81,7 +102,7 @@ public class Model {
       shapes.remove(i);
       shapes.add(shape);
 
-      selectShape(shape);
+      highlightShape(shape);
       redraw();
     }
   }
@@ -94,89 +115,9 @@ public class Model {
       shapes.remove(i);
       shapes.add(i - 1, shape);
 
-      selectShape(shape);
+      highlightShape(shape);
       redraw();
     }
-  }
-
-  public ArrayList<Coord> getNeighbors(Coord c) {
-    ArrayList<Coord> neighbors = new ArrayList<>();
-    neighbors.add(new Coord(c.x - 1, c.y));
-    neighbors.add(new Coord(c.x + 1, c.y));
-    neighbors.add(new Coord(c.x, c.y - 1));
-    neighbors.add(new Coord(c.x, c.y + 1));
-    System.out.println(neighbors);
-    return neighbors;
-  }
-
-  public void drawLine(Coord start, Coord end) {
-    /**
-     * Dessiner une ligne.
-     *
-     * @param gc   Le contexte graphique
-     * @param start Les coordonnées de départ
-     * @param end Les coordonnées d'arrivée
-     */
-
-    this.gc.setStroke(this.toolColor);
-    this.gc.setLineWidth(this.toolSize);
-    this.gc.strokeLine(start.x, start.y, end.x, end.y);
-  }
-
-  public void drawRectangle(Coord start, Coord end) {
-    /**
-     * Dessiner un rectangle.
-     *
-     * @param gc   Le contexte graphique
-     * @param start Les coordonnées de départ
-     * @param end Les coordonnées d'arrivée
-     */
-    this.gc.setStroke(this.toolColor);
-    this.gc.setLineWidth(this.toolSize);
-
-    double width = Math.abs(start.x - end.x);
-    double height = Math.abs(start.y - end.y);
-    double x = Math.min(start.x, end.x);
-    double y = Math.min(start.y, end.y);
-
-    this.gc.setFill(toolColor);
-    this.gc.fillRect(x, y, width, height);
-  }
-
-  public void drawCircle(Coord start, Coord end) {
-    /**
-     * Dessiner un cercle.
-     *
-     * @param gc   Le contexte graphique
-     * @param start Les coordonnées de départ
-     * @param end Les coordonnées d'arrivée
-     */
-    gc.setStroke(this.toolColor);
-    gc.setLineWidth(this.toolSize);
-
-    double radius = start.distance(end);
-
-    gc.strokeOval(start.x - radius, start.y - radius, radius * 2, radius * 2);
-  }
-
-  public void drawTriangle(Coord start, Coord end) {
-    /**
-     * Dessiner un triangle.
-     *
-     * @param gc Le contexte graphique
-     * @param x1 Les coordonnées du premier point
-     * @param x2 Les coordonnées du deuxième point
-     * @param x3 Les coordonnées du troisième point
-     */
-    gc.setStroke(this.toolColor);
-    gc.setLineWidth(this.toolSize);
-
-    Coord opp = start.opposite(end);
-
-    double[] xPoints = new double[] { start.x, end.x, opp.x };
-    double[] yPoints = new double[] { start.y, end.y, opp.y };
-
-    gc.strokePolygon(xPoints, yPoints, 3);
   }
 
   public void drawPen(ArrayList<Coord> coords) {
@@ -185,7 +126,7 @@ public class Model {
     }
   }
 
-  public void drawSelected(Coord[] coords) {
+  public void drawHighlight(Coord[] coords) {
     double offset = 0;
 
     double width = Math.abs(coords[0].x - coords[1].x) - offset;
@@ -210,37 +151,65 @@ public class Model {
     gc.moveTo(centerX, centerY);
   }
 
-  public void printSelectedShape(Coord mouse) {
-    shapeSelected = null;
+  public void selectShape(Coord mouse) {
+    shapeSelected = findShape(mouse);
+    highlightShape(shapeSelected);
     redraw();
+  }
 
+  public IShape findShape(Coord mouse) {
     for (int i = shapes.size() - 1; i >= 0; i--) {
       IShape iShape = shapes.get(i);
 
-      if (iShape.isIn(mouse)) {
-        selectShape(iShape);
-        break;
-      }
+      if (iShape.isIn(mouse)) return iShape;
+    }
+
+    return null;
+  }
+
+  public void updateAppState() {
+    btnFront.setDisable(true);
+    btnBack.setDisable(true);
+
+    if (shapeSelected == null) {
+      cPicker.setValue(toolColor);
+      inputSize.setText(toolSize + "");
+    } else {
+      cPicker.setValue(shapeSelected.getToolColor());
+      inputSize.setText(shapeSelected.getToolSize() + "");
     }
   }
 
-  private void selectShape(IShape shape) {
-    shapeSelected = shape;
-    drawSelected(shape.getSelectedCoords());
+  public void unselectShape() {
+    shapeSelected = null;
+    updateAppState();
+    redraw();
+  }
 
-    btnToBack.setDisable(true);
-    btnToFront.setDisable(true);
+  private void highlightShape(IShape shape) {
+    if (shape == null) return;
 
-    if (shapes.indexOf(shape) > 0) btnToBack.setDisable(false);
-    if (shapes.indexOf(shape) < shapes.size() - 1) btnToFront.setDisable(false);
+    drawHighlight(shape.getSelectedCoords());
+    updateAppState();
+
+    if (shapes.indexOf(shape) > 0) btnBack.setDisable(false);
+    if (shapes.indexOf(shape) < shapes.size() - 1) btnFront.setDisable(false);
   }
 
   public void moveShape(Coord mouse) {
     if (shapeSelected != null) {
       shapeSelected.moveTo(mouse);
       redraw();
-      drawSelected(shapeSelected.getSelectedCoords());
+      drawHighlight(shapeSelected.getSelectedCoords());
     }
+  }
+
+  public void removeShape(Coord mouse) {
+    shapeSelected = findShape(mouse);
+    shapes.remove(shapeSelected);
+    updateAppState();
+    unselectShape();
+    System.out.println("Remove object " + shapes.size());
   }
 
   public void redraw() {
@@ -250,6 +219,6 @@ public class Model {
       if (!iShape.isShape(ShapeTypes.PEN)) iShape.draw(gc);
     }
 
-    if (shapeSelected != null) drawSelected(shapeSelected.getSelectedCoords());
+    if (shapeSelected != null) drawHighlight(shapeSelected.getSelectedCoords());
   }
 }

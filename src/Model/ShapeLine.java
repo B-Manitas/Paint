@@ -10,9 +10,28 @@ public class ShapeLine implements IShape {
   private Coord start, end;
   private Color toolColor;
 
-  public ShapeLine(Coord c, int toolSize) {
+  public ShapeLine(int toolSize, Color toolColor) {
     this.toolSize = toolSize;
+    this.toolColor = toolColor;
+    this.start = new Coord();
+  }
+
+  public ShapeLine(Coord c, int toolSize, Color toolColor) {
+    this.toolSize = toolSize;
+    this.toolColor = toolColor;
     start = c;
+  }
+
+  private ShapeLine(
+    Coord posStart,
+    Coord posEnd,
+    int toolSize,
+    Color toolColor
+  ) {
+    this.toolSize = toolSize;
+    this.toolColor = toolColor;
+    this.start = posStart;
+    this.end = posEnd;
   }
 
   public Color getToolColor() {
@@ -27,13 +46,6 @@ public class ShapeLine implements IShape {
     this.toolSize = size;
   }
 
-  private ShapeLine(Coord posStart, Coord posEnd, int toolSize, Color toolColor) {
-    this.toolSize = toolSize;
-    this.toolColor = toolColor;
-    this.start = posStart;
-    this.end = posEnd;
-  }
-
   public IShape copy() {
     return new ShapeLine(start.copy(), end.copy(), toolSize, toolColor);
   }
@@ -46,7 +58,7 @@ public class ShapeLine implements IShape {
     return this.end;
   }
 
-  public void setEndCoord(Coord end){
+  public void setEndCoord(Coord end) {
     this.end = end;
   }
 

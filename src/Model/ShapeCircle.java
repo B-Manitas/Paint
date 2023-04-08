@@ -93,6 +93,7 @@ public class ShapeCircle implements IShape {
     
     gc.setLineWidth(toolSize);
     gc.setStroke(toolColor);
-    gc.strokeOval(center.x - radius, center.y - radius, radius * 2, radius * 2); 
+    gc.setFill(toolColor);
+    gc.fillOval(center.x - radius, center.y - radius, radius * 2, radius * 2); 
   }
 }

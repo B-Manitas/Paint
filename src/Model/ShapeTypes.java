@@ -7,5 +7,5 @@ public enum ShapeTypes {
     SQUARE,
     PEN,
     LINE,
-    SELECT
+    SELECT,
 }

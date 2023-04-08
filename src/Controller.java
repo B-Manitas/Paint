@@ -23,10 +23,13 @@ public class Controller {
   public Coord posStart = new Coord();
   public Coord posCurrent = new Coord();
   public Coord posOpposite = new Coord();
-  public IShape shapeSelected = new ShapePen(
+  public IShape shapeToolsSelected;
+
+  public ITools toolSelected = new ToolsPen(
     model.getColor(),
     model.getToolSize()
   );
+
   private Image previousImage;
 
   // Déclare les attributs de la vue
@@ -153,7 +156,7 @@ public class Controller {
       }
 
       model.setToolSize(newSize);
-      lblLog.setText("Taille modifiée");
+      lblLog.setText("La taille de l'outil a été modifiée.");
       inputSize.setText(model.getToolSizeStr());
     } catch (NumberFormatException ex) {
       inputSize.setText(model.getToolSizeStr());
@@ -169,7 +172,7 @@ public class Controller {
     if (model.getToolSize() != 20) {
       model.increaseToolSize();
       inputSize.setText(Integer.toString(model.getToolSize()));
-      lblLog.setText("Taille augtmentée");
+      lblLog.setText("La taille de l'outil a été augmentée.");
     }
   }
 
@@ -181,7 +184,7 @@ public class Controller {
     if (model.getToolSize() != 1) {
       model.decreaseToolSize();
       inputSize.setText(model.getToolSizeStr());
-      lblLog.setText("Taille diminuée");
+      lblLog.setText("La taille de l'outil a été diminuée.");
     }
   }
 
@@ -190,13 +193,14 @@ public class Controller {
     /**
      * Sélectionner le pinceau.
      */
-    shapeSelected =
-      new ShapePen(posStart, model.getColor(), model.getToolSize());
+    toolSelected =
+      new ToolsPen(posStart, model.getColor(), model.getToolSize());
     cancelStyle();
     model.setColor(cPicker);
 
-    lblLog.setText("Pinceau séléctionné");
+    lblLog.setText("Pinceau prêt à être utilisé.");
     btnPen.setStyle(selectedStyle);
+    model.unselectShape();
   }
 
   @FXML
@@ -204,12 +208,13 @@ public class Controller {
     /**
      * Sélectionner la gomme.
      */
-    shapeSelected = new ShapeEraser(model.getToolSize());
+    toolSelected = new ToolsEraser();
     cancelStyle();
 
     model.setColor(Color.WHITE);
-    lblLog.setText("Gomme séléctionnée");
+    lblLog.setText("Cliquer sur une forme pour la supprimer.");
     btnEraser.setStyle(selectedStyle);
+    model.unselectShape();
   }
 
   @FXML
@@ -219,8 +224,9 @@ public class Controller {
      */
     cancelStyle();
     btnShape.setStyle(selectedStyle);
-    lblLog.setText("Forme séléctionnée");
+    lblLog.setText("Choisir une forme à dessiner.");
     btnShape.setStyle(selectedStyle);
+    model.unselectShape();
   }
 
   @FXML
@@ -230,10 +236,13 @@ public class Controller {
      */
     cancelStyle();
     model.setColor(cPicker);
-    lblLog.setText("Ligne sélectionnée");
+    lblLog.setText("Cliquer et déplacer pour dessiner une ligne.");
     btnLine.setStyle(selectedStyle);
-    shapeSelected = new ShapeLine(posStart, model.getToolSize());
     btnShape.setStyle(selectedStyle);
+    shapeToolsSelected =
+      new ShapeLine(posStart, model.getToolSize(), model.getColor());
+    toolSelected = new ToolsShape();
+    model.unselectShape();
   }
 
   @FXML
@@ -244,10 +253,12 @@ public class Controller {
     cancelStyle();
     model.setColor(cPicker);
 
-    lblLog.setText("Rectangle sélectionné");
+    lblLog.setText("Cliquer et déplacer pour dessiner un rectangle.");
     btnRect.setStyle(selectedStyle);
     btnShape.setStyle(selectedStyle);
-    shapeSelected = new ShapeRect(posStart, model.getToolSize());
+    shapeToolsSelected = new ShapeRect(posStart, model.getToolSize());
+    toolSelected = new ToolsShape();
+    model.unselectShape();
   }
 
   @FXML
@@ -258,9 +269,11 @@ public class Controller {
     cancelStyle();
     btnShape.setStyle(selectedStyle);
     model.setColor(cPicker);
-    lblLog.setText("Cercle sélectionné");
+    lblLog.setText("Cliquer et déplacer pour dessiner un cercle.");
     btnCircle.setStyle(selectedStyle);
-    shapeSelected = new ShapeCircle(posStart, model.getToolSize());
+    shapeToolsSelected = new ShapeCircle(posStart, model.getToolSize());
+    toolSelected = new ToolsShape();
+    model.unselectShape();
   }
 
   @FXML
@@ -270,17 +283,19 @@ public class Controller {
      */
     cancelStyle();
     model.setColor(cPicker);
-    lblLog.setText("Cercle sélectionné");
+    lblLog.setText("Cliquer et déplacer pour dessiner un triangle.");
     btnTriangle.setStyle(selectedStyle);
     btnShape.setStyle(selectedStyle);
-    shapeSelected = new ShapeTriangle(posStart, model.getToolSize());
+    shapeToolsSelected = new ShapeTriangle(posStart, model.getToolSize());
+    toolSelected = new ToolsShape();
+    model.unselectShape();
   }
 
   @FXML
   void selectObject(ActionEvent event) {
     cancelStyle();
-    shapeSelected = new ShapeSelector(model);
-    lblLog.setText("Outils de sélections");
+    toolSelected = new ToolsSelector();
+    lblLog.setText("Cliquer sur une forme pour la sélectionner.");
     btnSelect.setStyle(selectedStyle);
   }
 
@@ -310,10 +325,11 @@ public class Controller {
     model.setGraphicsContext(gc);
     model.setCanvas(canvas);
     model.setBtns(btnBack, btnFront);
+    model.setCPicker(cPicker);
+    model.setInputSize(inputSize);
 
     canvas.setOnMousePressed(e -> {
-      btnFront.setDisable(true);
-      btnBack.setDisable(true);
+      model.updateAppState();
 
       // Récupère les coordonnées de la souris
       posStart = Coord.getCoordMouse(e, model.getToolSize());
@@ -322,15 +338,18 @@ public class Controller {
       gc.beginPath();
       gc.moveTo(e.getX(), e.getY());
 
-      shapeSelected.initializeCoord(posStart);
-      shapeSelected.setToolColor(model.getColor());
-      shapeSelected.setToolSize(model.getToolSize());
+      shapeToolsSelected.initializeCoord(posStart);
+      shapeToolsSelected.setToolColor(model.getColor());
+      shapeToolsSelected.setToolSize(model.getToolSize());
+      model.unselectShape();
 
       // Sauvegarder l'image précédente
       previousImage = canvas.snapshot(null, null);
 
-      if (shapeSelected.isShape(ShapeTypes.SELECT)) {
-        model.printSelectedShape(posStart);
+      if (toolSelected.isTool(ToolsTypes.SELECT)) {
+        model.selectShape(posStart);
+      } else if (toolSelected.isTool(ToolsTypes.ERASER)) {
+        model.removeShape(posStart);
       }
     });
 
@@ -339,15 +358,15 @@ public class Controller {
       Coord mouse = Coord.getCoordMouse(e, model.getToolSize());
       posCurrent = mouse;
 
-      if (shapeSelected.isShape(ShapeTypes.PEN)) {} else if (
-        shapeSelected.isShape(ShapeTypes.SELECT)
-      ) {
-        model.moveShape(posCurrent);
-      } else if (shapeSelected != null) {
+      if (toolSelected.isTool(ToolsTypes.PEN)) {
+        // TODO: Implémenter le pinceau
+      } else if (toolSelected.isTool(ToolsTypes.SHAPE)) {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
-        shapeSelected.setEndCoord(posCurrent);
-        shapeSelected.draw(gc);
+        shapeToolsSelected.setEndCoord(posCurrent);
+        shapeToolsSelected.draw(gc);
+      } else if (toolSelected.isTool(ToolsTypes.SELECT)) {
+        model.moveShape(posCurrent);
       }
     });
 
@@ -356,18 +375,15 @@ public class Controller {
       Coord mouse = Coord.getCoordMouse(e, model.getToolSize());
       posCurrent = mouse;
 
-      if (
-        shapeSelected.isShape(ShapeTypes.PEN) ||
-        shapeSelected.isShape(ShapeTypes.SELECT)
-      ) {} else if (shapeSelected != null) {
+      if (toolSelected.isTool(ToolsTypes.SHAPE)) {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
 
-        shapeSelected.setEndCoord(posCurrent);
-        shapeSelected.draw(gc);
-        shapeSelected.addCoord(posCurrent);
+        shapeToolsSelected.setEndCoord(posCurrent);
+        shapeToolsSelected.draw(gc);
+        shapeToolsSelected.addCoord(posCurrent);
 
-        model.addShape(shapeSelected.copy());
+        model.addShape(shapeToolsSelected.copy());
       }
     });
   }
