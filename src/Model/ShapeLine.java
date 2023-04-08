@@ -23,11 +23,10 @@ public class ShapeLine implements IShape {
   }
 
   private ShapeLine(
-    Coord posStart,
-    Coord posEnd,
-    int toolSize,
-    Color toolColor
-  ) {
+      Coord posStart,
+      Coord posEnd,
+      int toolSize,
+      Color toolColor) {
     this.toolSize = toolSize;
     this.toolColor = toolColor;
     this.start = posStart;
@@ -106,5 +105,13 @@ public class ShapeLine implements IShape {
     gc.setLineWidth(toolSize);
     gc.setStroke(toolColor);
     gc.strokeLine(start.x, start.y, end.x, end.y);
+  }
+
+  public void finishShape() {
+    if (start.x > end.x || start.y > end.y) {
+      Coord tmp = start;
+      start = end;
+      end = tmp;
+    }
   }
 }

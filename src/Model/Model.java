@@ -25,6 +25,7 @@ public class Model {
     private Button btnBack, btnFront;
     private ColorPicker cPicker;
     private TextField inputSize;
+    private ITools toolSelected;
 
     public void addShape(IShape shape) {
         if (!shape.isShape(ShapeTypes.SELECT)) {
@@ -44,6 +45,10 @@ public class Model {
 
     public void setCanvas(Canvas canvas) {
         this.canvas = canvas;
+    }
+
+    public void setToolSelected(ITools tool) {
+        this.toolSelected = tool;
     }
 
     private String fileTitle = "Untitled";
@@ -282,7 +287,12 @@ public class Model {
         if (shape == null)
             return;
 
-        drawHighlight(shape.getSelectedCoords());
+        Coord[] coordHighlight = shape.getSelectedCoords();
+        drawHighlight(coordHighlight);
+
+        ((ToolsSelector) toolSelected).setStart(coordHighlight[0]);
+        ((ToolsSelector) toolSelected).setEnd(coordHighlight[1]);
+
         updateAppState();
 
         if (shapes.indexOf(shape) > 0)
@@ -317,5 +327,20 @@ public class Model {
 
         if (shapeSelected != null)
             drawHighlight(shapeSelected.getSelectedCoords());
+    }
+
+    public void onDragSelect(Coord posStart, Coord posCurrent) {        
+        if (((ToolsSelector) toolSelected).isResized(posStart))
+            resizeShape(posCurrent);
+        else
+            moveShape(posCurrent);
+    }
+
+    private void resizeShape(Coord mouse) {
+        if (shapeSelected != null) {
+            shapeSelected.addCoord(mouse);
+            redraw();
+            drawHighlight(shapeSelected.getSelectedCoords());
+        }
     }
 }

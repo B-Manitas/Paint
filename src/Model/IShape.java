@@ -36,4 +36,6 @@ public interface IShape {
   public void setEndCoord(Coord end);
 
   public void draw(GraphicsContext gc);
+
+  public void finishShape();
 }

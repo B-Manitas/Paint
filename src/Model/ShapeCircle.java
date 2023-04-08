@@ -47,7 +47,7 @@ public class ShapeCircle implements IShape {
     return new Coord(center.x + radius, center.y + radius);
   }
 
-  public void setEndCoord(Coord end){
+  public void setEndCoord(Coord end) {
     this.radius = center.distance(end);
   }
 
@@ -56,7 +56,6 @@ public class ShapeCircle implements IShape {
   }
 
   public void addCoord(Coord c) {
-    c.printCoord();
     this.radius = center.distance(c);
   }
 
@@ -65,7 +64,7 @@ public class ShapeCircle implements IShape {
   }
 
   public boolean isIn(Coord c) {
-    return center.distance(c) <= radius + toolSize;
+    return center.distance(c) <= 1.5 * radius;
   }
 
   public IShape copy() {
@@ -75,11 +74,8 @@ public class ShapeCircle implements IShape {
   public Coord[] getSelectedCoords() {
     Coord[] coords = new Coord[2];
 
-    coords[0] = new Coord(center.x - radius, center.y - radius);
-    coords[1] = new Coord(center.x + radius, center.y + radius);
-
-    coords[0].moveTo(toolSize);
-    coords[1].moveTo(toolSize);
+    coords[0] = new Coord(center.x - 1.5 * radius, center.y - 1.5 * radius);
+    coords[1] = new Coord(center.x + 1.5 * radius, center.y + 1.5 * radius);
 
     return coords;
   }
@@ -88,12 +84,16 @@ public class ShapeCircle implements IShape {
     this.center = mouse;
   }
 
-  public void draw(GraphicsContext gc){
+  public void draw(GraphicsContext gc) {
     double radius = center.distance(getEndCoord());
-    
+
     gc.setLineWidth(toolSize);
     gc.setStroke(toolColor);
     gc.setFill(toolColor);
-    gc.fillOval(center.x - radius, center.y - radius, radius * 2, radius * 2); 
+    gc.fillOval(center.x - radius, center.y - radius, 2 * radius, 2 * radius);
+  }
+
+  public void finishShape() {
+    // Nothing to do here
   }
 }

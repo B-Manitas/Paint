@@ -119,4 +119,8 @@ public class ShapeTriangle implements IShape {
   public void setEndCoord(Coord end) {
     this.end = end;
   }
+
+  public void finishShape() {
+    // this.opposite = start.opposite(end);
+  }
 }

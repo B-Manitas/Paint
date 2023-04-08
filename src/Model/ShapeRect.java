@@ -10,12 +10,13 @@ public class ShapeRect extends Shape implements IShape {
   private Coord start, end;
   private int toolSize;
   private Color toolColor;
+  private int offset = 10;
 
   public ShapeRect(Coord c, int toolSize) {
     /**
      * Crée une forme de type rectangle.
      *
-     * @param c Coordonnées du point de départ
+     * @param c        Coordonnées du point de départ
      * @param toolSize Taille de l'outil
      */
     this.start = c;
@@ -27,7 +28,7 @@ public class ShapeRect extends Shape implements IShape {
      * Crée une forme de type rectangle.
      *
      * @param start Coordonnées du point de départ
-     * @param end Coordonnées du point d'arrivée
+     * @param end   Coordonnées du point d'arrivée
      */
     this.start = start;
     this.end = end;
@@ -76,15 +77,24 @@ public class ShapeRect extends Shape implements IShape {
     this.end = c;
   }
 
+  public void finishShape() {
+    if (this.start.x < this.end.x || this.start.y < this.end.y) {
+      System.out.println("Inverting coords");
+      Coord tmp = this.start.copy();
+      this.start = this.end.copy();
+      this.end = tmp;
+    }
+  }
+
   public void initializeCoord(Coord c) {
     this.start = c;
   }
 
   public boolean isIn(Coord c) {
-    double xMin = Math.min(start.x, end.x);
-    double xMax = Math.max(start.x, end.x);
-    double yMin = Math.min(start.y, end.y);
-    double yMax = Math.max(start.y, end.y);
+    double xMin = Math.min(start.x, end.x) - offset;
+    double xMax = Math.max(start.x, end.x) + offset;
+    double yMin = Math.min(start.y, end.y) - offset;
+    double yMax = Math.max(start.y, end.y) + offset;
 
     return c.x >= xMin && c.x <= xMax && c.y >= yMin && c.y <= yMax;
   }
@@ -96,8 +106,8 @@ public class ShapeRect extends Shape implements IShape {
   public Coord[] getSelectedCoords() {
     Coord[] coords = new Coord[2];
 
-    coords[0] = start.translate(-toolSize);
-    coords[1] = end.translate(toolSize);
+    coords[0] = start.translate(-offset);
+    coords[1] = end.translate(offset);
 
     return coords;
   }
@@ -110,7 +120,7 @@ public class ShapeRect extends Shape implements IShape {
     end.moveTo(dx, dy);
   }
 
-  public void draw(GraphicsContext gc){
+  public void draw(GraphicsContext gc) {
     gc.setStroke(toolColor);
     gc.setLineWidth(toolSize);
 

@@ -456,7 +456,7 @@ public class Controller {
       gc.beginPath();
       gc.moveTo(e.getX(), e.getY());
 
-      model.unselectShape();
+      model.setToolSelected(toolSelected);
 
       // Sauvegarder l'image précédente
       previousImage = canvas.snapshot(null, null);
@@ -466,10 +466,12 @@ public class Controller {
       }
 
       else if (toolSelected.isTool(ToolsTypes.ERASER)) {
+        model.unselectShape();
         model.removeShape(posStart);
       }
 
       else if (toolSelected.isTool(ToolsTypes.SHAPE)) {
+        model.unselectShape();
         shapeToolsSelected.initializeCoord(posStart);
         shapeToolsSelected.setToolColor(model.getColor());
         shapeToolsSelected.setToolSize(model.getToolSize());
@@ -483,17 +485,17 @@ public class Controller {
 
       if (toolSelected.isTool(ToolsTypes.PEN)) {
         // TODO: Implémenter le pinceau
-      } 
-      
+      }
+
       else if (toolSelected.isTool(ToolsTypes.SHAPE)) {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
         shapeToolsSelected.setEndCoord(posCurrent);
         shapeToolsSelected.draw(gc);
-      } 
-      
+      }
+
       else if (toolSelected.isTool(ToolsTypes.SELECT)) {
-        model.moveShape(posCurrent);
+        model.onDragSelect(posStart, posCurrent);
       }
     });
 
@@ -509,6 +511,7 @@ public class Controller {
         shapeToolsSelected.setEndCoord(posCurrent);
         shapeToolsSelected.draw(gc);
         shapeToolsSelected.addCoord(posCurrent);
+        shapeToolsSelected.finishShape();
 
         model.addShape(shapeToolsSelected.copy());
       }
