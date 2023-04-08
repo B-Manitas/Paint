@@ -52,7 +52,7 @@ public class Controller {
   private TextField inputSize;
 
   @FXML
-  private Button btnEraser, btnPen, upSize, downSize, btnSelect;
+  private Button btnEraser, btnPen, upSize, downSize, btnSelect, btnFront, btnBack;
 
   @FXML
   private ToggleGroup groupSize;
@@ -295,30 +295,43 @@ public class Controller {
   }
 
   @FXML
+  public void onPressToFront() {
+    model.toFront();
+  }
+
+  @FXML
+  public void onPressToBack() {
+    model.toBack();
+  }
+
+  @FXML
   public void initialize() {
     GraphicsContext gc = canvas.getGraphicsContext2D();
     model.setGraphicsContext(gc);
     model.setCanvas(canvas);
+    model.setBtns(btnBack, btnFront);
 
     canvas.setOnMousePressed(e -> {
+      btnFront.setDisable(true);
+      btnBack.setDisable(true);
+
       // Récupère les coordonnées de la souris
       posStart = Coord.getCoordMouse(e, model.getToolSize());
       posCurrent = posStart;
 
-      gc.setStroke(model.getColor());
-      gc.setLineWidth(model.getToolSize());
       gc.beginPath();
       gc.moveTo(e.getX(), e.getY());
 
       shapeSelected.initializeCoord(posStart);
+      shapeSelected.setToolColor(model.getColor());
+      shapeSelected.setToolSize(model.getToolSize());
 
       // Sauvegarder l'image précédente
       previousImage = canvas.snapshot(null, null);
 
       if (shapeSelected.isShape(ShapeTypes.SELECT)) {
-        model.setSelector((ShapeSelector) shapeSelected);
         model.printSelectedShape(posStart);
-      } else model.setSelector(null);
+      }
     });
 
     canvas.setOnMouseDragged(e -> {
@@ -326,42 +339,15 @@ public class Controller {
       Coord mouse = Coord.getCoordMouse(e, model.getToolSize());
       posCurrent = mouse;
 
-      if (shapeSelected.isShape(ShapeTypes.LINE)) {
-        //  Restaurer l'image précédente
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        gc.drawImage(previousImage, 0, 0);
-
-        model.drawLine(posStart, posCurrent);
-      } else if (shapeSelected.isShape(ShapeTypes.RECTANGLE)) {
-        // Restaurer l'image précédente
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        gc.drawImage(previousImage, 0, 0);
-
-        // Dessiner le rectangle
-        model.drawRectangle(posStart, posCurrent);
-      } else if (shapeSelected.isShape(ShapeTypes.CIRCLE)) {
-        // Restaurer l'image précédente
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        gc.drawImage(previousImage, 0, 0);
-
-        // Dessiner le cercle
-        model.drawCircle(posStart, posCurrent);
-      } else if (shapeSelected.isShape(ShapeTypes.TRIANGLE)) {
-        // Restaurer l'image précédente
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        gc.drawImage(previousImage, 0, 0);
-
-        model.drawTriangle(posStart, posCurrent);
-      } else if (shapeSelected.isShape(ShapeTypes.PEN)) {
-        model.drawPen(posStart, posCurrent);
-
-        posStart = posCurrent;
-        shapeSelected.addCoord(posCurrent);
-
-        // Enregistrer la nouvelle image
-        previousImage = canvas.snapshot(null, null);
-      } else if (shapeSelected.isShape(ShapeTypes.SELECT)) {
+      if (shapeSelected.isShape(ShapeTypes.PEN)) {} else if (
+        shapeSelected.isShape(ShapeTypes.SELECT)
+      ) {
         model.moveShape(posCurrent);
+      } else if (shapeSelected != null) {
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.drawImage(previousImage, 0, 0);
+        shapeSelected.setEndCoord(posCurrent);
+        shapeSelected.draw(gc);
       }
     });
 
@@ -370,32 +356,19 @@ public class Controller {
       Coord mouse = Coord.getCoordMouse(e, model.getToolSize());
       posCurrent = mouse;
 
-      if (shapeSelected.isShape(ShapeTypes.LINE)) {
+      if (
+        shapeSelected.isShape(ShapeTypes.PEN) ||
+        shapeSelected.isShape(ShapeTypes.SELECT)
+      ) {} else if (shapeSelected != null) {
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.drawImage(previousImage, 0, 0);
 
-        model.drawLine(posStart, posCurrent);
-      } else if (shapeSelected.isShape(ShapeTypes.RECTANGLE)) {
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        gc.drawImage(previousImage, 0, 0);
-
-        model.drawRectangle(posStart, posCurrent);
-      } else if (shapeSelected.isShape(ShapeTypes.CIRCLE)) {
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        gc.drawImage(previousImage, 0, 0);
-
-        model.drawCircle(posStart, posCurrent);
-      } else if (shapeSelected.isShape(ShapeTypes.TRIANGLE)) {
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        gc.drawImage(previousImage, 0, 0);
-
-        model.drawTriangle(posStart, posCurrent);
-      } else {
+        shapeSelected.setEndCoord(posCurrent);
+        shapeSelected.draw(gc);
         shapeSelected.addCoord(posCurrent);
-      }
 
-      shapeSelected.addCoord(posCurrent);
-      model.addShape(shapeSelected.copy());
+        model.addShape(shapeSelected.copy());
+      }
     });
   }
 }

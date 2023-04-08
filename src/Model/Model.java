@@ -3,6 +3,7 @@ package Model;
 import java.util.ArrayList;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.paint.Color;
 
@@ -13,8 +14,8 @@ public class Model {
   private ArrayList<IShape> shapes = new ArrayList<IShape>();
   private GraphicsContext gc;
   private Canvas canvas;
-  private ShapeSelector selector;
   private IShape shapeSelected;
+  private Button btnToBack, btnToFront;
 
   public void addShape(IShape shape) {
     if (!shape.isShape(ShapeTypes.SELECT)) {
@@ -23,8 +24,9 @@ public class Model {
     }
   }
 
-  public void setSelector(ShapeSelector selector) {
-    this.selector = selector;
+  public void setBtns(Button btnBack, Button btnFront) {
+    this.btnToBack = btnBack;
+    this.btnToFront = btnFront;
   }
 
   public void setGraphicsContext(GraphicsContext gc) {
@@ -71,6 +73,32 @@ public class Model {
     this.toolSize--;
   }
 
+  public void toFront() {
+    IShape shape = this.shapeSelected;
+    int i = shapes.indexOf(shapeSelected);
+
+    if (i < shapes.size() - 1) {
+      shapes.remove(i);
+      shapes.add(shape);
+
+      selectShape(shape);
+      redraw();
+    }
+  }
+
+  public void toBack() {
+    IShape shape = this.shapeSelected;
+    int i = shapes.indexOf(shapeSelected);
+
+    if (i > 0) {
+      shapes.remove(i);
+      shapes.add(i - 1, shape);
+
+      selectShape(shape);
+      redraw();
+    }
+  }
+
   public ArrayList<Coord> getNeighbors(Coord c) {
     ArrayList<Coord> neighbors = new ArrayList<>();
     neighbors.add(new Coord(c.x - 1, c.y));
@@ -111,7 +139,8 @@ public class Model {
     double x = Math.min(start.x, end.x);
     double y = Math.min(start.y, end.y);
 
-    this.gc.strokeRect(x, y, width, height);
+    this.gc.setFill(toolColor);
+    this.gc.fillRect(x, y, width, height);
   }
 
   public void drawCircle(Coord start, Coord end) {
@@ -152,21 +181,21 @@ public class Model {
 
   public void drawPen(ArrayList<Coord> coords) {
     for (int i = 1; i < coords.size(); i++) {
-      drawPen(coords.get(0), coords.get(i));
+      drawPen(coords.get(i - 1), coords.get(i));
     }
   }
 
   public void drawSelected(Coord[] coords) {
-    gc.setStroke(Color.BLUE);
-    gc.setLineDashes(5);
-    gc.setLineWidth(2);
-
     double offset = 0;
 
     double width = Math.abs(coords[0].x - coords[1].x) - offset;
     double height = Math.abs(coords[0].y - coords[1].y) - offset;
     double x = Math.min(coords[0].x, coords[1].x) - offset;
     double y = Math.min(coords[0].y, coords[1].y) - offset;
+
+    gc.setStroke(Color.BLUE);
+    gc.setLineDashes(5);
+    gc.setLineWidth(2);
 
     gc.strokeRect(x, y, width, height);
   }
@@ -189,37 +218,38 @@ public class Model {
       IShape iShape = shapes.get(i);
 
       if (iShape.isIn(mouse)) {
-        drawSelected(iShape.getSelectedCoords());
-        shapeSelected = iShape;
-
+        selectShape(iShape);
         break;
       }
     }
   }
 
+  private void selectShape(IShape shape) {
+    shapeSelected = shape;
+    drawSelected(shape.getSelectedCoords());
+
+    btnToBack.setDisable(true);
+    btnToFront.setDisable(true);
+
+    if (shapes.indexOf(shape) > 0) btnToBack.setDisable(false);
+    if (shapes.indexOf(shape) < shapes.size() - 1) btnToFront.setDisable(false);
+  }
+
   public void moveShape(Coord mouse) {
-    shapeSelected.moveTo(mouse);
-    redraw();
-    drawSelected(shapeSelected.getSelectedCoords());
+    if (shapeSelected != null) {
+      shapeSelected.moveTo(mouse);
+      redraw();
+      drawSelected(shapeSelected.getSelectedCoords());
+    }
   }
 
   public void redraw() {
     this.gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
     for (IShape iShape : shapes) {
-      if (iShape.isShape(ShapeTypes.LINE)) {
-        ShapeLine iShapeLine = (ShapeLine) iShape;
-        drawLine(iShapeLine.getStart(), iShapeLine.getEnd());
-      } else if (iShape.isShape(ShapeTypes.CIRCLE)) {
-        ShapeCircle iShapeCircle = (ShapeCircle) iShape;
-        drawCircle(iShapeCircle.getCenter(), iShapeCircle.getRadiusCoord());
-      } else if (iShape.isShape(ShapeTypes.RECTANGLE)) {
-        ShapeRect iShapeRect = (ShapeRect) iShape;
-        drawRectangle(iShapeRect.getStart(), iShapeRect.getEnd());
-      } else if (iShape.isShape(ShapeTypes.TRIANGLE)) {
-        ShapeTriangle iShapeTri = (ShapeTriangle) iShape;
-        drawTriangle(iShapeTri.getStart(), iShapeTri.getEnd());
-      }
+      if (!iShape.isShape(ShapeTypes.PEN)) iShape.draw(gc);
     }
+
+    if (shapeSelected != null) drawSelected(shapeSelected.getSelectedCoords());
   }
 }

@@ -1,5 +1,8 @@
 package Model;
 
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+
 /**
  * ShapeInterface
  */
@@ -17,4 +20,20 @@ public interface IShape {
   public Coord[] getSelectedCoords();
 
   public void moveTo(Coord mouse);
+
+  public int getToolSize();
+
+  public Color getToolColor();
+
+  public void setToolColor(Color color);
+
+  public void setToolSize(int size);
+
+  public Coord getStartCoord();
+
+  public Coord getEndCoord();
+
+  public void setEndCoord(Coord end);
+
+  public void draw(GraphicsContext gc);
 }

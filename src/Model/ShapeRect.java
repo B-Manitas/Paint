@@ -1,5 +1,7 @@
 package Model;
 
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 
 public class ShapeRect extends Shape implements IShape {
@@ -7,6 +9,7 @@ public class ShapeRect extends Shape implements IShape {
   private ShapeTypes type = ShapeTypes.RECTANGLE;
   private Coord start, end;
   private int toolSize;
+  private Color toolColor;
 
   public ShapeRect(Coord c, int toolSize) {
     /**
@@ -19,7 +22,7 @@ public class ShapeRect extends Shape implements IShape {
     this.toolSize = toolSize;
   }
 
-  private ShapeRect(Coord start, Coord end, int toolSize) {
+  private ShapeRect(Coord start, Coord end, int toolSize, Color toolColor) {
     /**
      * Crée une forme de type rectangle.
      *
@@ -29,13 +32,14 @@ public class ShapeRect extends Shape implements IShape {
     this.start = start;
     this.end = end;
     this.toolSize = toolSize;
+    this.toolColor = toolColor;
   }
 
-  public Coord getStart() {
+  public Coord getStartCoord() {
     return this.start;
   }
 
-  public Coord getEnd() {
+  public Coord getEndCoord() {
     return this.end;
   }
 
@@ -50,6 +54,22 @@ public class ShapeRect extends Shape implements IShape {
 
   public int getToolSize() {
     return this.toolSize;
+  }
+
+  public Color getToolColor() {
+    return this.toolColor;
+  }
+
+  public void setToolColor(Color color) {
+    this.toolColor = color;
+  }
+
+  public void setToolSize(int size) {
+    this.toolSize = size;
+  }
+
+  public void setEndCoord(Coord end) {
+    this.end = end;
   }
 
   public void addCoord(Coord c) {
@@ -70,7 +90,7 @@ public class ShapeRect extends Shape implements IShape {
   }
 
   public IShape copy() {
-    return new ShapeRect(start, end, toolSize);
+    return new ShapeRect(start, end, toolSize, toolColor);
   }
 
   public Coord[] getSelectedCoords() {
@@ -88,5 +108,18 @@ public class ShapeRect extends Shape implements IShape {
 
     start.moveTo(dx, dy);
     end.moveTo(dx, dy);
+  }
+
+  public void draw(GraphicsContext gc){
+    gc.setStroke(toolColor);
+    gc.setLineWidth(toolSize);
+
+    double width = Math.abs(start.x - end.x);
+    double height = Math.abs(start.y - end.y);
+    double x = Math.min(start.x, end.x);
+    double y = Math.min(start.y, end.y);
+
+    gc.setFill(toolColor);
+    gc.fillRect(x, y, width, height);
   }
 }

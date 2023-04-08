@@ -1,11 +1,15 @@
 package Model;
 
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+
 public class ShapeCircle implements IShape {
 
   private ShapeTypes type = ShapeTypes.CIRCLE;
   private Coord center;
   private double radius;
   private int toolSize;
+  private Color toolColor;
 
   public ShapeCircle(Coord c, int toolSize) {
     this.toolSize = toolSize;
@@ -16,17 +20,35 @@ public class ShapeCircle implements IShape {
     return this.toolSize;
   }
 
-  private ShapeCircle(Coord center, double radius) {
-    this.center = center;
-    this.radius = radius;
+  public Color getToolColor() {
+    return this.toolColor;
   }
 
-  public Coord getCenter() {
+  public void setToolColor(Color color) {
+    this.toolColor = color;
+  }
+
+  public void setToolSize(int size) {
+    this.toolSize = size;
+  }
+
+  private ShapeCircle(Coord center, double radius, int toolSize, Color toolColor) {
+    this.center = center;
+    this.radius = radius;
+    this.toolSize = toolSize;
+    this.toolColor = toolColor;
+  }
+
+  public Coord getStartCoord() {
     return center;
   }
 
-  public Coord getRadiusCoord() {
+  public Coord getEndCoord() {
     return new Coord(center.x + radius, center.y + radius);
+  }
+
+  public void setEndCoord(Coord end){
+    this.radius = center.distance(end);
   }
 
   public boolean isShape(ShapeTypes type) {
@@ -43,12 +65,11 @@ public class ShapeCircle implements IShape {
   }
 
   public boolean isIn(Coord c) {
-    System.out.println(radius);
     return center.distance(c) <= radius + toolSize;
   }
 
   public IShape copy() {
-    return new ShapeCircle(center, radius);
+    return new ShapeCircle(center, radius, toolSize, toolColor);
   }
 
   public Coord[] getSelectedCoords() {
@@ -65,5 +86,13 @@ public class ShapeCircle implements IShape {
 
   public void moveTo(Coord mouse) {
     this.center = mouse;
+  }
+
+  public void draw(GraphicsContext gc){
+    double radius = center.distance(getEndCoord());
+    
+    gc.setLineWidth(toolSize);
+    gc.setStroke(toolColor);
+    gc.strokeOval(center.x - radius, center.y - radius, radius * 2, radius * 2); 
   }
 }

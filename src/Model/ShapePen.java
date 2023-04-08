@@ -8,7 +8,9 @@ public class ShapePen implements IShape {
 
   private ShapeTypes type = ShapeTypes.PEN;
   private ArrayList<Coord> shapeCoord;
+  private Coord start;
   private int toolSize;
+  private Color toolColor;
 
   public ShapePen(Color color, int toolSize) {
     super();
@@ -27,6 +29,46 @@ public class ShapePen implements IShape {
     initializeCoord(C);
   }
 
+  public Color getToolColor() {
+    return this.toolColor;
+  }
+
+  public int getToolSize() {
+    return this.toolSize;
+  }
+
+  public Coord getStartCoord() {
+    // TODO Auto-generated method stub
+    return this.start;
+  }
+
+  public Coord getEndCoord() {
+    // TODO Auto-generated method stub
+    return this.start;
+  }
+
+  public void setToolColor(Color color) {
+    this.toolColor = color;
+  }
+
+  public void setToolSize(int size) {
+    this.toolSize = size;
+  }
+
+  public void draw(GraphicsContext gc) {
+    /**
+     * Dessine la forme.
+     *
+     * @param gc Le contexte graphique
+     */
+    // TODO Auto-generated method stub
+  }
+
+  public void setEndCoord(Coord end) {
+    // TODO Auto-generated method stub
+
+  }
+
   public ArrayList<Coord> getShapeCoord() {
     /**
      * Retourne la liste de coordonnées de la forme.
@@ -34,19 +76,21 @@ public class ShapePen implements IShape {
     return shapeCoord;
   }
 
-  public void initializeCoord(Coord C) {
+  public void initializeCoord(Coord c) {
     /**
      * Initialise la liste de coordonnées de la forme.
      */
+    start = c;
+
     shapeCoord = new ArrayList<Coord>();
-    shapeCoord.add(C);
+    shapeCoord.add(c);
 
     for (int i = -toolSize; i <= toolSize; i++) {
       for (int j = -toolSize; j <= toolSize; j++) {
         if (i == 0 && j == 0) {
           continue; // La coordonnée principale a déjà été ajoutée
         }
-        shapeCoord.add(new Coord(C.x + i, C.y + j));
+        shapeCoord.add(new Coord(c.x + i, c.y + j));
       }
     }
   }
@@ -145,6 +189,13 @@ public class ShapePen implements IShape {
   }
 
   public void moveTo(Coord mouse) {
-    // TODO Auto-generated method stub
+    ArrayList<Coord> initPoints = this.getShapeCoord();
+
+    for (int i = 0; i < shapeCoord.size(); i++) {
+      Coord pointInit = initPoints.get(i);
+      Coord point = shapeCoord.get(i);
+      point.x = pointInit.x + mouse.x - pointInit.x;
+      point.y = pointInit.y + mouse.y - pointInit.y;
+    }
   }
 }

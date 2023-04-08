@@ -1,32 +1,53 @@
 package Model;
 
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+
 public class ShapeLine implements IShape {
 
   private ShapeTypes type = ShapeTypes.LINE;
   private int toolSize;
   private Coord start, end;
+  private Color toolColor;
 
   public ShapeLine(Coord c, int toolSize) {
     this.toolSize = toolSize;
     start = c;
   }
 
-  private ShapeLine(Coord posStart, Coord posEnd, int toolSize) {
+  public Color getToolColor() {
+    return this.toolColor;
+  }
+
+  public void setToolColor(Color color) {
+    this.toolColor = color;
+  }
+
+  public void setToolSize(int size) {
+    this.toolSize = size;
+  }
+
+  private ShapeLine(Coord posStart, Coord posEnd, int toolSize, Color toolColor) {
     this.toolSize = toolSize;
+    this.toolColor = toolColor;
     this.start = posStart;
     this.end = posEnd;
   }
 
   public IShape copy() {
-    return new ShapeLine(start.copy(), end.copy(), toolSize);
+    return new ShapeLine(start.copy(), end.copy(), toolSize, toolColor);
   }
 
-  public Coord getStart() {
+  public Coord getStartCoord() {
     return this.start;
   }
 
-  public Coord getEnd() {
+  public Coord getEndCoord() {
     return this.end;
+  }
+
+  public void setEndCoord(Coord end){
+    this.end = end;
   }
 
   public int getToolSize() {
@@ -67,5 +88,11 @@ public class ShapeLine implements IShape {
 
     start.moveTo(dx, dy);
     end.moveTo(dx, dy);
+  }
+
+  public void draw(GraphicsContext gc) {
+    gc.setLineWidth(toolSize);
+    gc.setStroke(toolColor);
+    gc.strokeLine(start.x, start.y, end.x, end.y);
   }
 }
