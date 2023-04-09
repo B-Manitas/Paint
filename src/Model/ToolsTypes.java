@@ -1,8 +1,8 @@
 package Model;
 
 public enum ToolsTypes {
-  ERASER,
-  SELECT,
-  PEN,
-  SHAPE,
+    ERASER,
+    SELECT,
+    PEN,
+    SHAPE,
 }
