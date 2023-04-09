@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -466,6 +467,39 @@ public class Controller {
         model.setWidget(btnBack, btnFront, cPicker, lblZoom);
         model.setInputSize(inputSize);
 
+        canvas.setOnMouseMoved(e -> {
+            Coord mouse = Coord.getCoordMouse(e);
+
+            if (toolSelected.isTool(ToolsTypes.SHAPE))
+                canvas.setCursor(Cursor.CROSSHAIR);
+
+            else if (toolSelected.isTool(ToolsTypes.ERASER))
+                canvas.setCursor(Cursor.HAND);
+
+            else if (toolSelected.isTool(ToolsTypes.SELECT)) {
+                ToolsSelector selector = (ToolsSelector) toolSelected;
+
+                if (selector.canResizeH(mouse))
+                    canvas.setCursor(Cursor.H_RESIZE);
+
+                else if (selector.canResizeV(mouse))
+                    canvas.setCursor(Cursor.V_RESIZE);
+
+                else if (selector.canMove(mouse))
+                    canvas.setCursor(Cursor.MOVE);
+
+                else if (model.isSelectedShape())
+                    canvas.setCursor(Cursor.DEFAULT);
+
+                else
+                    canvas.setCursor(Cursor.HAND);
+            }
+
+            else
+                canvas.setCursor(Cursor.DEFAULT);
+
+        });
+
         canvas.setOnMousePressed(e -> {
             model.updateAppState();
 
@@ -481,9 +515,8 @@ public class Controller {
             // Sauvegarder l'image précédente
             previousImage = canvas.snapshot(null, null);
 
-            if (toolSelected.isTool(ToolsTypes.SELECT)) {
+            if (toolSelected.isTool(ToolsTypes.SELECT))
                 model.selectShape(posStart);
-            }
 
             else if (toolSelected.isTool(ToolsTypes.ERASER)) {
                 model.unselectShape();
@@ -520,6 +553,13 @@ public class Controller {
                 ((ToolsShape) toolSelected).draw(canvas, previousImage, posCurrent, shapeToolsSelected);
                 model.addShape(shapeToolsSelected.copy());
             }
+
+            else if (toolSelected.isTool(ToolsTypes.SELECT))
+                if (model.isSelectedShape()) {
+                    Coord[] coords = model.getShapeSelected().getSelectedCoords();
+                    ((ToolsSelector) toolSelected).setSelection(coords[0], coords[1]);
+
+                }
         });
     }
 }

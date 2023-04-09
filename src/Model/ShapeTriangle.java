@@ -86,6 +86,7 @@ public class ShapeTriangle implements IShape {
 
 		start.moveTo(dx, dy);
 		end.moveTo(dx, dy);
+		opposite.moveTo(dx, dy);
 	}
 
 	public void draw(GraphicsContext gc) {

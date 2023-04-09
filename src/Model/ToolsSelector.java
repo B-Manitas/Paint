@@ -18,31 +18,55 @@ public class ToolsSelector implements ITools {
 		return ToolsSelector.type == type;
 	}
 
-	public double distance(double x1, double x2) {
-		return Math.abs(x1 - x2);
-	}
-
 	public boolean isSelected() {
 		return start != null && end != null;
 	}
 
-	public boolean isResized(Coord mouse) {
-		return isResizedH(mouse) || isResizedV(mouse);
+	public boolean isOnSelectionX(Coord mouse) {
+		return isSelected() && mouse.x > start.x && mouse.x < end.x;
 	}
 
-	public boolean isResizedV(Coord mouse) {
-		return isSelected() && (distance(mouse.y, start.y) < offset ||
-				distance(mouse.y, end.y) < offset);
+	public boolean isOnSelectionY(Coord mouse) {
+		return isSelected() && mouse.y > start.y && mouse.y < end.y;
 	}
 
-	public boolean isResizedH(Coord mouse) {
-		return isSelected() && (distance(mouse.x, start.x) < offset ||
-				distance(mouse.x, end.x) < offset);
+	public boolean isOnShapeX(Coord mouse) {
+		return isSelected() && mouse.x > start.x + offset && mouse.x < end.x - offset;
+	}
+
+	public boolean isOnShapeY(Coord mouse) {
+		return isSelected() && mouse.y > start.y + offset && mouse.y < end.y - offset;
+	}
+
+	public boolean isOnShape(Coord mouse) {
+		return isOnShapeX(mouse) && isOnShapeY(mouse);
+	}
+
+	public boolean canMove(Coord mouse) {
+		return isOnShapeX(mouse) && isOnShapeY(mouse) && !canResize(mouse);
+	}
+
+	public boolean canResize(Coord mouse) {
+		return canResizeH(mouse) || canResizeV(mouse);
+	}
+
+	public boolean canResizeH(Coord mouse) {
+		return isOnSelectionX(mouse) && !isOnShapeX(mouse);
+	}
+
+	public boolean canResizeV(Coord mouse) {
+		return isOnSelectionY(mouse) && !isOnShapeY(mouse);
 	}
 
 	public void setSelection(Coord startPos, Coord endPos) {
-		this.start = startPos;
-		this.end = endPos;
+		if (startPos.x > endPos.x || startPos.y > endPos.y) {
+			Coord tmp = startPos;
+			startPos = endPos;
+			endPos = tmp;
+		} else {
+			this.start = startPos;
+			this.end = endPos;
+		}
 	}
 
 	public void reset() {

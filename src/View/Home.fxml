@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ColorPicker?>
@@ -37,6 +38,9 @@
                      <font>
                         <Font name="System Bold" size="15.0" />
                      </font>
+                     <cursor>
+                        <Cursor fx:constant="TEXT" />
+                     </cursor>
                   </TextField>
                   <MenuButton mnemonicParsing="false" prefHeight="40.0" prefWidth="0.0" style="-fx-background-color: transparent;">
                      <items>
@@ -45,6 +49,9 @@
                         <MenuItem fx:id="btnSave" mnemonicParsing="false" onAction="#onSave" text="Enregistrer" />
                         <MenuItem fx:id="btnClose" mnemonicParsing="false" onAction="#onExit" text="Quitter" />
                      </items>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
                   </MenuButton>
                </children>
             </HBox>
@@ -80,6 +87,9 @@
                                  <toggleGroup>
                                     <ToggleGroup fx:id="groupShape" />
                                  </toggleGroup>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
                                 </ToggleButton>
                            </content>
                         </CustomMenuItem>
@@ -93,6 +103,9 @@
                                        </image>
                                     </ImageView>
                                  </graphic>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
                               </ToggleButton>
                            </content>
                         </CustomMenuItem>
@@ -106,6 +119,9 @@
                                        </image>
                                     </ImageView>
                                  </graphic>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
                               </ToggleButton>
                            </content>
                         </CustomMenuItem>
@@ -119,6 +135,9 @@
                                        </image>
                                     </ImageView>
                                  </graphic>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
                               </ToggleButton>
                            </content>
                         </CustomMenuItem>
@@ -136,6 +155,9 @@
                      <tooltip>
                         <Tooltip text="Formes" />
                      </tooltip>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
                   </MenuButton>
                   <Separator orientation="VERTICAL" prefHeight="200.0" />
                   <ColorPicker fx:id="cPicker" onAction="#selectColor" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: transparent; -fx-background-radius: 5; -fx-border-radius: 5;">
@@ -145,10 +167,16 @@
                      <value>
                         <Color />
                      </value>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
                   </ColorPicker>
                   <HBox alignment="CENTER" prefHeight="8.0" prefWidth="68.0">
                      <children>
-                        <TextField fx:id="inputSize" alignment="CENTER" onAction="#listenSize" prefHeight="30.0" prefWidth="37.0" text="2" />
+                        <TextField fx:id="inputSize" alignment="CENTER" onAction="#listenSize" prefHeight="30.0" prefWidth="37.0" text="2">
+                           <cursor>
+                              <Cursor fx:constant="TEXT" />
+                           </cursor></TextField>
                         <VBox prefHeight="48.0" prefWidth="16.0">
                            <children>
                               <Button fx:id="upSize" mnemonicParsing="false" onAction="#onPressIncreaseToolSize" style="-fx-background-color: transparent;">
@@ -159,6 +187,9 @@
                                        </image>
                                     </ImageView>
                                  </graphic>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
                               </Button>
                               <Button fx:id="downSize" mnemonicParsing="false" onAction="#onPressDecreaseToolSize" prefHeight="24.0" prefWidth="31.0" style="-fx-background-color: transparent;">
                                  <graphic>
@@ -168,6 +199,9 @@
                                        </image>
                                     </ImageView>
                                  </graphic>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
                               </Button>
                            </children>
                            <HBox.margin>
@@ -191,6 +225,9 @@
                      <tooltip>
                         <Tooltip text="Gomme" />
                      </tooltip>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
                   </Button>
                   <Button fx:id="btnSelect" mnemonicParsing="false" onAction="#selectObject" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-border-width: 5;">
                      <HBox.margin>
@@ -206,6 +243,9 @@
                      <tooltip>
                         <Tooltip text="Selection de forme" />
                      </tooltip>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
                   </Button>
                   <Separator orientation="VERTICAL" prefHeight="200.0" />
                   <Button fx:id="btnFront" disable="true" mnemonicParsing="false" onAction="#onPressToFront" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
@@ -222,6 +262,9 @@
                      <tooltip>
                         <Tooltip text="Mettre en avant" />
                      </tooltip>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
                   </Button>
                   <Button fx:id="btnBack" disable="true" mnemonicParsing="false" onAction="#onPressToBack" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
                      <graphic>
@@ -237,12 +280,18 @@
                      <tooltip>
                         <Tooltip text="Mettre en arrière" />
                      </tooltip>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
                   </Button>
                </children>
             </HBox>
             <HBox alignment="BOTTOM_LEFT" prefHeight="40.0">
                <children>
-                  <Button fx:id="btnHelp" mnemonicParsing="false" onAction="#onHelp" prefHeight="73.0" prefWidth="71.0" style="-fx-border-radius: 20; -fx-background-radius: 20;" text="Aide" />
+                  <Button fx:id="btnHelp" mnemonicParsing="false" onAction="#onHelp" prefHeight="73.0" prefWidth="71.0" style="-fx-border-radius: 20; -fx-background-radius: 20;" text="Aide">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></Button>
                </children>
             </HBox>
          </children>
@@ -277,6 +326,9 @@
                      <HBox.margin>
                         <Insets bottom="3.0" left="3.0" right="3.0" top="5.0" />
                      </HBox.margin>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
                   </Button>
                   <Pane HBox.hgrow="ALWAYS">
                      <children>
@@ -301,6 +353,9 @@
                      <HBox.margin>
                         <Insets bottom="3.0" left="3.0" right="3.0" top="5.0" />
                      </HBox.margin>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
                   </Button>
                </children>
             </HBox>
@@ -354,6 +409,9 @@
                            <VBox.margin>
                               <Insets top="10.0" />
                            </VBox.margin>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
                         </Button>
                      </children>
                   </VBox>

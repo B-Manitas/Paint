@@ -6,10 +6,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import java.util.Optional;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.WritableImage;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.TextField;
+import javafx.scene.image.*;
+import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.control.Alert;
@@ -104,6 +102,14 @@ public class Model {
             shapeSelected.setToolSize(size);
             redraw();
         }
+    }
+
+    public IShape getShapeSelected() {
+        return this.shapeSelected;
+    }
+
+    public boolean isSelectedShape() {
+        return this.shapeSelected != null;
     }
 
     public void setToolSize(String size) {
@@ -268,9 +274,19 @@ public class Model {
     }
 
     public void selectShape(Coord mouse) {
+        ToolsSelector selector = (ToolsSelector) toolSelected;
+
+        if (selector.canMove(mouse) || selector.canResize(mouse))
+            return;
+
         shapeSelected = findShape(mouse);
+
+        if (shapeSelected == null)
+            selector.reset();
+
         highlightShape(shapeSelected);
         redraw();
+
     }
 
     public IShape findShape(Coord mouse) {
@@ -288,6 +304,7 @@ public class Model {
         btnFront.setDisable(true);
         btnBack.setDisable(true);
         lblZoom.setText(getZoomRatio());
+        canvas.requestFocus();
 
         if (shapeSelected == null) {
             cPicker.setValue(toolColor);
@@ -350,10 +367,12 @@ public class Model {
     }
 
     public void onDragSelect(Coord posStart, Coord posCurrent) {
-        if (((ToolsSelector) toolSelected).isResized(posStart))
+        ToolsSelector selector = ((ToolsSelector) toolSelected);
+
+        if (selector.canResize(posStart))
             resizeShape(posCurrent);
 
-        else
+        else if (selector.canMove(posStart))
             moveShape(posCurrent);
     }
 
