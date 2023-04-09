@@ -59,14 +59,19 @@ public class ToolsSelector implements ITools {
 	}
 
 	public void setSelection(Coord startPos, Coord endPos) {
-		if (startPos.x > endPos.x || startPos.y > endPos.y) {
-			Coord tmp = startPos;
-			startPos = endPos;
-			endPos = tmp;
-		} else {
-			this.start = startPos;
-			this.end = endPos;
+		if(startPos.x > endPos.x) {
+			double tmp = startPos.x;
+			startPos.x = endPos.x;
+			endPos.x = tmp;
 		}
+		else if(startPos.y > endPos.y) {
+			double tmp = startPos.y;
+			startPos.y = endPos.y;
+			endPos.y = tmp;
+		}
+
+		this.start = startPos;
+		this.end = endPos;
 	}
 
 	public void reset() {

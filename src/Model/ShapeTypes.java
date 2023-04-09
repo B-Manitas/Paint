@@ -8,4 +8,5 @@ public enum ShapeTypes {
     PEN,
     LINE,
     SELECT,
+    TEXT
 }

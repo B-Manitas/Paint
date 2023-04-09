@@ -26,11 +26,9 @@ public class Controller {
     public Coord posStart = new Coord();
     public Coord posCurrent = new Coord();
     public Coord posOpposite = new Coord();
-    public IShape shapeToolsSelected;
+    public IShape shapeToolsSelected = new ShapeLine(posStart, model.getToolSize(), model.getColor());
 
-    public ITools toolSelected = new ToolsPen(
-            model.getColor(),
-            model.getToolSize());
+    public ITools toolSelected = new ToolsShape();
 
     private Image previousImage;
     public static boolean halfCtrlSPressed = false;
@@ -59,13 +57,15 @@ public class Controller {
     private MenuButton btnSize, btnShape;
 
     @FXML
-    private CustomMenuItem btnLine, btnRect, btnCircle, btnTriangle;
+    private CustomMenuItem btnRect, btnCircle, btnTriangle;
 
     @FXML
     private TextField inputSize;
 
     @FXML
-    private Button btnEraser, btnPen, upSize, downSize, btnSelect, btnFront, btnBack;
+    private Button btnLine, btnEraser, upSize, downSize, btnSelect, btnFront, btnBack, btnText;
+
+    private Button btnPen = new Button();
 
     @FXML
     private ToggleGroup groupSize;
@@ -277,6 +277,18 @@ public class Controller {
         lblLog.setText("Couleur modifiée");
     }
 
+    public void selectText() {
+        /**
+         * Sélectionner le texte.
+         */
+        cancelStyle();
+        btnText.setStyle(selectedStyle);
+        lblLog.setText("Cliquer pour ajouter du texte");
+        model.unselectShape();
+        shapeToolsSelected = new ShapeText(posCurrent, model.getToolSize(), model.getColor());
+        toolSelected = new ToolsShape();
+    }
+
     @FXML
     public void selectSize(ActionEvent event) {
         /**
@@ -330,7 +342,6 @@ public class Controller {
         }
     }
 
-    @FXML
     void selectPen(ActionEvent event) {
         /**
          * Sélectionner le pinceau.
@@ -378,7 +389,6 @@ public class Controller {
         model.setColor(cPicker);
         lblLog.setText("Cliquer et déplacer pour dessiner une ligne.");
         btnLine.setStyle(selectedStyle);
-        btnShape.setStyle(selectedStyle);
         shapeToolsSelected = new ShapeLine(posStart, model.getToolSize(), model.getColor());
         toolSelected = new ToolsShape();
         model.unselectShape();
@@ -444,8 +454,9 @@ public class Controller {
         btnEraser.setStyle(defaultStyle);
         btnPen.setStyle(defaultStyle);
         btnShape.setStyle(defaultStyle);
-        btnShape.setStyle(defaultStyle);
+        btnText.setStyle(defaultStyle);
         btnSelect.setStyle(defaultStyle);
+        btnLine.setStyle(defaultStyle);
     }
 
     @FXML
@@ -551,14 +562,15 @@ public class Controller {
 
             if (toolSelected.isTool(ToolsTypes.SHAPE)) {
                 ((ToolsShape) toolSelected).draw(canvas, previousImage, posCurrent, shapeToolsSelected);
+                shapeToolsSelected.finishShape();
                 model.addShape(shapeToolsSelected.copy());
+                model.redraw();
             }
 
             else if (toolSelected.isTool(ToolsTypes.SELECT))
                 if (model.isSelectedShape()) {
                     Coord[] coords = model.getShapeSelected().getSelectedCoords();
                     ((ToolsSelector) toolSelected).setSelection(coords[0], coords[1]);
-
                 }
         });
     }

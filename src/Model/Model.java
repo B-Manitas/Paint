@@ -17,7 +17,7 @@ import javafx.scene.control.ButtonType;
 public class Model {
 
     private Color toolColor = Color.BLACK;
-    private int toolSize = 2;
+    private int toolSize = 5;
     private ArrayList<IShape> shapes = new ArrayList<IShape>();
     private GraphicsContext gc;
     private Canvas canvas;
@@ -326,14 +326,14 @@ public class Model {
             return;
 
         Coord[] coordHighlight = shape.getSelectedCoords();
-        drawHighlight(coordHighlight);
-
         ((ToolsSelector) toolSelected).setSelection(coordHighlight[0], coordHighlight[1]);
+        drawHighlight(coordHighlight);
 
         updateAppState();
 
         if (shapes.indexOf(shape) > 0)
             btnBack.setDisable(false);
+
         if (shapes.indexOf(shape) < shapes.size() - 1)
             btnFront.setDisable(false);
     }

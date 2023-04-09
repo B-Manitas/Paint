@@ -57,11 +57,16 @@
             </HBox>
             <HBox alignment="CENTER" prefHeight="40.0" HBox.hgrow="ALWAYS">
                <children>
-                  <Button fx:id="btnPen" disable="true" mnemonicParsing="false" onAction="#selectPen" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: #D3E8EE; -fx-background-radius: 5;">
+                  <Button fx:id="btnText" mnemonicParsing="false" onAction="#selectText" prefHeight="117.0" prefWidth="65.0" style="-fx-background-color: transparent; -fx-background-radius: 5;" text="Text" textAlignment="CENTER">
+                     <tooltip>
+                        <Tooltip text="Texte" />
+                     </tooltip>
+                  </Button>
+                  <Button fx:id="btnLine" mnemonicParsing="false" onAction="#selectLine" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: #D3E8EE; -fx-background-radius: 5;">
                      <graphic>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@assets/icon/pen.png" />
+                              <Image url="@assets/icon/shape/line.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -69,33 +74,14 @@
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
                      <tooltip>
-                        <Tooltip text="Pinceau" />
+                        <Tooltip text="Ligne" />
                      </tooltip>
                   </Button>
                   <MenuButton fx:id="btnShape" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent;">
                      <items>
-                        <CustomMenuItem fx:id="btnLine" mnemonicParsing="false" onAction="#selectLine">
-                           <content>
-                                <ToggleButton style="-fx-background-color: transparent;">
-                                 <graphic>
-                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                          <Image url="@assets/icon/shape/line.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="groupShape" />
-                                 </toggleGroup>
-                                 <cursor>
-                                    <Cursor fx:constant="HAND" />
-                                 </cursor>
-                                </ToggleButton>
-                           </content>
-                        </CustomMenuItem>
                         <CustomMenuItem fx:id="btnRect" mnemonicParsing="false" onAction="#selectRectangle">
                            <content>
-                              <ToggleButton style="-fx-background-color: transparent;" toggleGroup="$groupShape">
+                              <ToggleButton style="-fx-background-color: transparent;">
                                  <graphic>
                                     <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
@@ -106,22 +92,12 @@
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
-                              </ToggleButton>
-                           </content>
-                        </CustomMenuItem>
-                        <CustomMenuItem fx:id="btnCircle" mnemonicParsing="false" onAction="#selectCircle">
-                           <content>
-                              <ToggleButton style="-fx-background-color: transparent;" toggleGroup="$groupShape">
-                                 <graphic>
-                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                          <Image url="@assets/icon/shape/circle.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
-                                 <cursor>
-                                    <Cursor fx:constant="HAND" />
-                                 </cursor>
+                                 <tooltip>
+                                    <Tooltip text="Rectangle" />
+                                 </tooltip>
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="groupShape" />
+                                 </toggleGroup>
                               </ToggleButton>
                            </content>
                         </CustomMenuItem>
@@ -138,6 +114,28 @@
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
+                                 <tooltip>
+                                    <Tooltip text="Triangle" />
+                                 </tooltip>
+                              </ToggleButton>
+                           </content>
+                        </CustomMenuItem>
+                        <CustomMenuItem fx:id="btnCircle" mnemonicParsing="false" onAction="#selectCircle">
+                           <content>
+                              <ToggleButton style="-fx-background-color: transparent;" toggleGroup="$groupShape">
+                                 <graphic>
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@assets/icon/shape/circle.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                                 <tooltip>
+                                    <Tooltip text="Cercle" />
+                                 </tooltip>
                               </ToggleButton>
                            </content>
                         </CustomMenuItem>
