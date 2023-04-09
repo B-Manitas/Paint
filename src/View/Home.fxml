@@ -266,7 +266,7 @@
             <Canvas fx:id="canvas" height="660.0" width="1290.0" />
             <HBox alignment="CENTER" layoutX="14.0" layoutY="598.0" style="-fx-border-radius: 5; -fx-background-radius: 5; -fx-background-color: #fafafa;">
                <children>
-                  <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
+                  <Button mnemonicParsing="false" onAction="#onZoomIn" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -280,7 +280,7 @@
                   </Button>
                   <Pane HBox.hgrow="ALWAYS">
                      <children>
-                        <Text layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="100%" textAlignment="CENTER" textOrigin="CENTER" wrappingWidth="78.0">
+                        <Text fx:id="lblZoom" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="100%" textAlignment="CENTER" textOrigin="CENTER" wrappingWidth="78.0">
                            <font>
                               <Font size="22.0" />
                            </font>
@@ -290,7 +290,7 @@
                         <Insets bottom="3.0" left="3.0" right="3.0" top="5.0" />
                      </HBox.margin>
                   </Pane>
-                  <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
+                  <Button mnemonicParsing="false" onAction="#onZoomOut" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                            <image>

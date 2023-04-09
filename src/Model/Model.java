@@ -1,6 +1,7 @@
 package Model;
 
 import java.util.ArrayList;
+
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -10,6 +11,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
@@ -23,9 +25,14 @@ public class Model {
     private Canvas canvas;
     private IShape shapeSelected;
     private Button btnBack, btnFront;
+    private Text lblZoom;
     private ColorPicker cPicker;
     private TextField inputSize;
     private ITools toolSelected;
+    private String fileTitle = "Untitled";
+    private double zoomFactor = 1.0;
+    private final double minFactorZoom = .1;
+    private final double maxFactorZoom = 2;
 
     public void addShape(IShape shape) {
         if (!shape.isShape(ShapeTypes.SELECT)) {
@@ -34,9 +41,11 @@ public class Model {
         }
     }
 
-    public void setBtns(Button btnBack, Button btnFront) {
+    public void setWidget(Button btnBack, Button btnFront, ColorPicker cPicker, Text lblZoom) {
         this.btnBack = btnBack;
         this.btnFront = btnFront;
+        this.cPicker = cPicker;
+        this.lblZoom = lblZoom;
     }
 
     public void setGraphicsContext(GraphicsContext gc) {
@@ -51,7 +60,13 @@ public class Model {
         this.toolSelected = tool;
     }
 
-    private String fileTitle = "Untitled";
+    public String getZoomRatio() {
+        return (int) Math.round(zoomFactor * 100) + "%";
+    }
+
+    public double getZoomFactor() {
+        return zoomFactor;
+    }
 
     public String getfileTitle() {
         return this.fileTitle;
@@ -214,7 +229,12 @@ public class Model {
          */
         this.toolColor = Color.BLACK;
         this.toolSize = 2;
+        this.zoomFactor = 1;
         this.fileTitle = "Untitled";
+        shapes.clear();
+        updateAppState();
+        unselectShape();
+        redraw();
     }
 
     public boolean showSaveAlert() {
@@ -267,6 +287,7 @@ public class Model {
     public void updateAppState() {
         btnFront.setDisable(true);
         btnBack.setDisable(true);
+        lblZoom.setText(getZoomRatio());
 
         if (shapeSelected == null) {
             cPicker.setValue(toolColor);
@@ -290,8 +311,7 @@ public class Model {
         Coord[] coordHighlight = shape.getSelectedCoords();
         drawHighlight(coordHighlight);
 
-        ((ToolsSelector) toolSelected).setStart(coordHighlight[0]);
-        ((ToolsSelector) toolSelected).setEnd(coordHighlight[1]);
+        ((ToolsSelector) toolSelected).setSelection(coordHighlight[0], coordHighlight[1]);
 
         updateAppState();
 
@@ -329,18 +349,44 @@ public class Model {
             drawHighlight(shapeSelected.getSelectedCoords());
     }
 
-    public void onDragSelect(Coord posStart, Coord posCurrent) {        
+    public void onDragSelect(Coord posStart, Coord posCurrent) {
         if (((ToolsSelector) toolSelected).isResized(posStart))
             resizeShape(posCurrent);
+
         else
             moveShape(posCurrent);
     }
 
     private void resizeShape(Coord mouse) {
         if (shapeSelected != null) {
-            shapeSelected.addCoord(mouse);
+            shapeSelected.setEndCoord(mouse);
             redraw();
             drawHighlight(shapeSelected.getSelectedCoords());
+        }
+    }
+
+    public void zoomIn() {
+        if (zoomFactor > minFactorZoom) {
+            zoomFactor = Math.max(zoomFactor - .1, minFactorZoom);
+            unselectShape();
+
+            for (IShape iShape : shapes)
+                iShape.zoomIn();
+
+            redraw();
+        }
+    }
+
+    public void zoomOut() {
+        if (zoomFactor < maxFactorZoom) {
+            zoomFactor = Math.min(zoomFactor + .1, maxFactorZoom);
+
+            unselectShape();
+
+            for (IShape iShape : shapes)
+                iShape.zoomOut();
+
+            redraw();
         }
     }
 }

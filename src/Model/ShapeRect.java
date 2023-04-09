@@ -11,6 +11,7 @@ public class ShapeRect extends Shape implements IShape {
   private int toolSize;
   private Color toolColor;
   private int offset = 10;
+  private double zoomFactor = 1.0;
 
   public ShapeRect(Coord c, int toolSize) {
     /**
@@ -73,10 +74,6 @@ public class ShapeRect extends Shape implements IShape {
     this.end = end;
   }
 
-  public void addCoord(Coord c) {
-    this.end = c;
-  }
-
   public void finishShape() {
     if (this.start.x < this.end.x || this.start.y < this.end.y) {
       System.out.println("Inverting coords");
@@ -120,16 +117,30 @@ public class ShapeRect extends Shape implements IShape {
     end.moveTo(dx, dy);
   }
 
-  public void draw(GraphicsContext gc) {
-    gc.setStroke(toolColor);
-    gc.setLineWidth(toolSize);
-
+  public void draw(GraphicsContext gc) {    
     double width = Math.abs(start.x - end.x);
     double height = Math.abs(start.y - end.y);
     double x = Math.min(start.x, end.x);
     double y = Math.min(start.y, end.y);
-
+    
+    gc.setStroke(toolColor);
+    gc.setLineWidth(toolSize * Math.exp(zoomFactor - 1));
     gc.setFill(toolColor);
     gc.fillRect(x, y, width, height);
+  }
+
+  public void zoomIn() {
+    this.zoomFactor = Math.max(.1, this.zoomFactor - .1);
+    zoom();
+  }
+
+  public void zoomOut() {
+    this.zoomFactor = Math.min(2.1, this.zoomFactor + .1);
+    zoom();
+  }
+
+  public void zoom(){
+    start.centerZoom(this.zoomFactor);
+    end.centerZoom(this.zoomFactor);
   }
 }

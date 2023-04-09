@@ -1,10 +1,13 @@
 package Model;
 
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+
 public class ToolsSelector implements ITools {
 
 	private static ToolsTypes type = ToolsTypes.SELECT;
 	private Coord start, end;
-	private double offset = 10;
+	private double offset = 7;
 
 	public boolean isTool(ToolsTypes type) {
 		/**
@@ -19,28 +22,46 @@ public class ToolsSelector implements ITools {
 		return Math.abs(x1 - x2);
 	}
 
+	public boolean isSelected() {
+		return start != null && end != null;
+	}
+
 	public boolean isResized(Coord mouse) {
-		if (start == null || end == null)
-			return false;
-
-		else
-			return distance(mouse.x, start.x) < offset ||
-					distance(mouse.y, start.y) < offset ||
-					distance(mouse.x, end.x) < offset ||
-					distance(mouse.y, end.y) < offset;
-
+		return isResizedH(mouse) || isResizedV(mouse);
 	}
 
-	public void setStart(Coord start) {
-		this.start = start;
+	public boolean isResizedV(Coord mouse) {
+		return isSelected() && (distance(mouse.y, start.y) < offset ||
+				distance(mouse.y, end.y) < offset);
 	}
 
-	public void setEnd(Coord end) {
-		this.end = end;
+	public boolean isResizedH(Coord mouse) {
+		return isSelected() && (distance(mouse.x, start.x) < offset ||
+				distance(mouse.x, end.x) < offset);
+	}
+
+	public void setSelection(Coord startPos, Coord endPos) {
+		this.start = startPos;
+		this.end = endPos;
 	}
 
 	public void reset() {
-		start = null;
-		end = null;
+		this.start = null;
+		this.end = null;
+	}
+
+	public void draw(GraphicsContext gc) {
+		double offset = 0;
+
+		double width = Math.abs(start.x - end.x) - offset;
+		double height = Math.abs(start.y - end.y) - offset;
+		double x = Math.min(start.x, end.x) - offset;
+		double y = Math.min(start.y, end.y) - offset;
+
+		gc.setStroke(Color.BLUE);
+		gc.setLineDashes(5);
+		gc.setLineWidth(2);
+
+		gc.strokeRect(x, y, width, height);
 	}
 }

@@ -7,19 +7,14 @@ public class ShapeLine implements IShape {
 
   private ShapeTypes type = ShapeTypes.LINE;
   private int toolSize;
-  private Coord start, end;
   private Color toolColor;
+  private Coord start, end;
+  private double zoomFactor = 1.0;
 
-  public ShapeLine(int toolSize, Color toolColor) {
+  public ShapeLine(Coord posStart, int toolSize, Color toolColor) {
     this.toolSize = toolSize;
     this.toolColor = toolColor;
-    this.start = new Coord();
-  }
-
-  public ShapeLine(Coord c, int toolSize, Color toolColor) {
-    this.toolSize = toolSize;
-    this.toolColor = toolColor;
-    start = c;
+    this.start = posStart;
   }
 
   private ShapeLine(
@@ -69,10 +64,6 @@ public class ShapeLine implements IShape {
     return this.type == type;
   }
 
-  public void addCoord(Coord c) {
-    this.end = c;
-  }
-
   public void initializeCoord(Coord c) {
     this.start = c;
   }
@@ -102,7 +93,8 @@ public class ShapeLine implements IShape {
   }
 
   public void draw(GraphicsContext gc) {
-    gc.setLineWidth(toolSize);
+    gc.setLineDashes(0);
+    gc.setLineWidth(toolSize * Math.exp(zoomFactor - 1));
     gc.setStroke(toolColor);
     gc.strokeLine(start.x, start.y, end.x, end.y);
   }
@@ -113,5 +105,20 @@ public class ShapeLine implements IShape {
       start = end;
       end = tmp;
     }
+  }
+
+  public void zoomIn() {
+    this.zoomFactor = Math.max(.1, this.zoomFactor - .1);
+    zoom();
+  }
+
+  public void zoomOut() {
+    this.zoomFactor = Math.min(2.1, this.zoomFactor + .1);
+    zoom();
+  }
+
+  public void zoom(){
+    start.centerZoom(this.zoomFactor);
+    end.centerZoom(this.zoomFactor);
   }
 }

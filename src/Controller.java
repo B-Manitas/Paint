@@ -6,12 +6,13 @@ import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
-import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.*;
 import javax.imageio.ImageIO;
 
@@ -44,6 +45,9 @@ public class Controller {
 
   @FXML
   private Label lblLog;
+
+  @FXML
+  private Text lblZoom;
 
   @FXML
   private TextField fileTitle;
@@ -247,6 +251,24 @@ public class Controller {
   }
 
   @FXML
+  void onZoomIn(ActionEvent event) {
+    /**
+     * Zoomer en avant sur l'image.
+     */
+    model.zoomIn();
+    lblZoom.setText(model.getZoomRatio());
+  }
+
+  @FXML
+  void onZoomOut(ActionEvent event) {
+    /**
+     * Zoomer en arrière sur l'image.
+     */
+    model.zoomOut();
+    lblZoom.setText(model.getZoomRatio());
+  }
+
+  @FXML
   void selectColor(ActionEvent event) {
     /**
      * Sélectionner une couleur.
@@ -330,7 +352,6 @@ public class Controller {
     toolSelected = new ToolsEraser();
     cancelStyle();
 
-    model.setColor(Color.WHITE);
     lblLog.setText("Cliquer sur une forme pour la supprimer.");
     btnEraser.setStyle(selectedStyle);
     model.unselectShape();
@@ -440,10 +461,10 @@ public class Controller {
   @FXML
   public void initialize() {
     GraphicsContext gc = canvas.getGraphicsContext2D();
+    Coord.setCenter(canvas.getWidth() / 2, canvas.getHeight() / 2);
     model.setGraphicsContext(gc);
     model.setCanvas(canvas);
-    model.setBtns(btnBack, btnFront);
-    model.setCPicker(cPicker);
+    model.setWidget(btnBack, btnFront, cPicker, lblZoom);
     model.setInputSize(inputSize);
 
     canvas.setOnMousePressed(e -> {
@@ -472,9 +493,9 @@ public class Controller {
 
       else if (toolSelected.isTool(ToolsTypes.SHAPE)) {
         model.unselectShape();
-        shapeToolsSelected.initializeCoord(posStart);
         shapeToolsSelected.setToolColor(model.getColor());
         shapeToolsSelected.setToolSize(model.getToolSize());
+        shapeToolsSelected.initializeCoord(posStart);
       }
     });
 
@@ -483,20 +504,12 @@ public class Controller {
       Coord mouse = Coord.getCoordMouse(e, model.getToolSize());
       posCurrent = mouse;
 
-      if (toolSelected.isTool(ToolsTypes.PEN)) {
-        // TODO: Implémenter le pinceau
-      }
+      if (toolSelected.isTool(ToolsTypes.SHAPE))
+        ((ToolsShape) toolSelected).draw(canvas, previousImage, posCurrent, shapeToolsSelected);
 
-      else if (toolSelected.isTool(ToolsTypes.SHAPE)) {
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        gc.drawImage(previousImage, 0, 0);
-        shapeToolsSelected.setEndCoord(posCurrent);
-        shapeToolsSelected.draw(gc);
-      }
-
-      else if (toolSelected.isTool(ToolsTypes.SELECT)) {
+      else if (toolSelected.isTool(ToolsTypes.SELECT))
         model.onDragSelect(posStart, posCurrent);
-      }
+
     });
 
     canvas.setOnMouseReleased(e -> {
@@ -505,14 +518,7 @@ public class Controller {
       posCurrent = mouse;
 
       if (toolSelected.isTool(ToolsTypes.SHAPE)) {
-        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        gc.drawImage(previousImage, 0, 0);
-
-        shapeToolsSelected.setEndCoord(posCurrent);
-        shapeToolsSelected.draw(gc);
-        shapeToolsSelected.addCoord(posCurrent);
-        shapeToolsSelected.finishShape();
-
+        ((ToolsShape) toolSelected).draw(canvas, previousImage, posCurrent, shapeToolsSelected);
         model.addShape(shapeToolsSelected.copy());
       }
     });
