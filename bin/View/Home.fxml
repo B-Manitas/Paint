@@ -25,7 +25,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#handle" prefHeight="800.0" prefWidth="1300.0" style="-fx-background-color: #f4f4f4;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#keyEvent" prefHeight="800.0" prefWidth="1300.0" style="-fx-background-color: #f4f4f4;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller">
    <children>
       <HBox alignment="CENTER" layoutX="325.0" layoutY="175.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <padding>
@@ -34,7 +34,7 @@
          <children>
             <HBox>
                <children>
-                  <TextField fx:id="fileTitle" focusTraversable="false" onAction="#setfileTitle" prefHeight="47.0" prefWidth="217.0" text="Untitled" HBox.hgrow="ALWAYS">
+                  <TextField fx:id="inputFilename" focusTraversable="false" onAction="#onEditFilename" prefHeight="47.0" prefWidth="217.0" text="Untitled" HBox.hgrow="ALWAYS">
                      <font>
                         <Font name="System Bold" size="15.0" />
                      </font>
@@ -57,12 +57,12 @@
             </HBox>
             <HBox alignment="CENTER" prefHeight="40.0" HBox.hgrow="ALWAYS">
                <children>
-                  <Button fx:id="btnText" mnemonicParsing="false" onAction="#selectText" prefHeight="117.0" prefWidth="65.0" style="-fx-background-color: transparent; -fx-background-radius: 5;" text="Text" textAlignment="CENTER">
+                  <Button fx:id="btnText" mnemonicParsing="false" onAction="#onAddText" prefHeight="117.0" prefWidth="65.0" style="-fx-background-color: transparent; -fx-background-radius: 5;" text="Text" textAlignment="CENTER">
                      <tooltip>
                         <Tooltip text="Texte" />
                      </tooltip>
                   </Button>
-                  <Button fx:id="btnLine" mnemonicParsing="false" onAction="#selectLine" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: #D3E8EE; -fx-background-radius: 5;">
+                  <Button fx:id="btnLine" mnemonicParsing="false" onAction="#onAddLine" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: #D3E8EE; -fx-background-radius: 5;">
                      <graphic>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -79,7 +79,7 @@
                   </Button>
                   <MenuButton fx:id="btnShape" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent;">
                      <items>
-                        <CustomMenuItem fx:id="btnRect" mnemonicParsing="false" onAction="#selectRectangle">
+                        <CustomMenuItem fx:id="btnRect" mnemonicParsing="false" onAction="#onAddRect">
                            <content>
                               <ToggleButton style="-fx-background-color: transparent;">
                                  <graphic>
@@ -101,7 +101,7 @@
                               </ToggleButton>
                            </content>
                         </CustomMenuItem>
-                        <CustomMenuItem fx:id="btnTriangle" mnemonicParsing="false" onAction="#selectTriangle">
+                        <CustomMenuItem fx:id="btnTriangle" mnemonicParsing="false" onAction="#onAddTrig">
                            <content>
                               <ToggleButton style="-fx-background-color: transparent;" toggleGroup="$groupShape">
                                  <graphic>
@@ -120,7 +120,7 @@
                               </ToggleButton>
                            </content>
                         </CustomMenuItem>
-                        <CustomMenuItem fx:id="btnCircle" mnemonicParsing="false" onAction="#selectCircle">
+                        <CustomMenuItem fx:id="btnCircle" mnemonicParsing="false" onAction="#onAddCircle">
                            <content>
                               <ToggleButton style="-fx-background-color: transparent;" toggleGroup="$groupShape">
                                  <graphic>
@@ -158,7 +158,7 @@
                      </cursor>
                   </MenuButton>
                   <Separator orientation="VERTICAL" prefHeight="200.0" />
-                  <ColorPicker fx:id="cPicker" onAction="#selectColor" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: transparent; -fx-background-radius: 5; -fx-border-radius: 5;">
+                  <ColorPicker fx:id="cPicker" onAction="#onChangeColor" prefHeight="40.0" prefWidth="120.0" style="-fx-background-color: transparent; -fx-background-radius: 5; -fx-border-radius: 5;">
                      <HBox.margin>
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
@@ -171,13 +171,13 @@
                   </ColorPicker>
                   <HBox alignment="CENTER" prefHeight="8.0" prefWidth="68.0">
                      <children>
-                        <TextField fx:id="inputSize" alignment="CENTER" onAction="#listenSize" prefHeight="30.0" prefWidth="37.0" text="2">
+                        <TextField fx:id="inputSize" alignment="CENTER" onAction="#onChangeSize" prefHeight="30.0" prefWidth="37.0" text="2">
                            <cursor>
                               <Cursor fx:constant="TEXT" />
                            </cursor></TextField>
                         <VBox prefHeight="48.0" prefWidth="16.0">
                            <children>
-                              <Button fx:id="upSize" mnemonicParsing="false" onAction="#onPressIncreaseToolSize" style="-fx-background-color: transparent;">
+                              <Button fx:id="btnSizeUp" mnemonicParsing="false" onAction="#onIncreaseSize" style="-fx-background-color: transparent;">
                                  <graphic>
                                     <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
@@ -189,7 +189,7 @@
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
                               </Button>
-                              <Button fx:id="downSize" mnemonicParsing="false" onAction="#onPressDecreaseToolSize" prefHeight="24.0" prefWidth="31.0" style="-fx-background-color: transparent;">
+                              <Button fx:id="btnSizeDown" mnemonicParsing="false" onAction="#onDecreaseSize" prefHeight="24.0" prefWidth="31.0" style="-fx-background-color: transparent;">
                                  <graphic>
                                     <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true" rotate="180.0">
                                        <image>
@@ -209,7 +209,7 @@
                      </children>
                   </HBox>
                   <Separator orientation="VERTICAL" prefHeight="48.0" prefWidth="0.0" />
-                  <Button fx:id="btnEraser" mnemonicParsing="false" onAction="#selectEraser" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
+                  <Button fx:id="btnEraser" mnemonicParsing="false" onAction="#onEraser" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
                      <graphic>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" rotate="180.0">
                            <image>
@@ -227,7 +227,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button fx:id="btnSelect" mnemonicParsing="false" onAction="#selectObject" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-border-width: 5;">
+                  <Button fx:id="btnSelection" mnemonicParsing="false" onAction="#onSelection" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-border-width: 5;">
                      <HBox.margin>
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
@@ -246,7 +246,7 @@
                      </cursor>
                   </Button>
                   <Separator orientation="VERTICAL" prefHeight="200.0" />
-                  <Button fx:id="btnFront" disable="true" mnemonicParsing="false" onAction="#onPressToFront" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
+                  <Button fx:id="btnFront" disable="true" mnemonicParsing="false" onAction="#onToFront" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
                      <graphic>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" rotate="180.0">
                            <image>
@@ -264,7 +264,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Button fx:id="btnBack" disable="true" mnemonicParsing="false" onAction="#onPressToBack" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
+                  <Button fx:id="btnBack" disable="true" mnemonicParsing="false" onAction="#onToBack" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
                      <graphic>
                         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" rotate="180.0">
                            <image>
@@ -301,7 +301,7 @@
                   <Font name="System Bold" size="16.0" />
                </font>
             </Label>
-            <Label fx:id="lblLog" prefHeight="25.0" prefWidth="1182.0" text="...">
+            <Label fx:id="lblLog" prefHeight="25.0" prefWidth="1182.0" text="Cliquer et déplacer pour dessiner une ligne.">
                <font>
                   <Font size="16.0" />
                </font>
@@ -328,18 +328,11 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
-                  <Pane HBox.hgrow="ALWAYS">
-                     <children>
-                        <Text fx:id="lblZoom" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="100%" textAlignment="CENTER" textOrigin="CENTER" wrappingWidth="78.0">
-                           <font>
-                              <Font size="22.0" />
-                           </font>
-                        </Text>
-                     </children>
-                     <HBox.margin>
-                        <Insets bottom="3.0" left="3.0" right="3.0" top="5.0" />
-                     </HBox.margin>
-                  </Pane>
+                  <Label fx:id="lblZoom" alignment="CENTER" contentDisplay="CENTER" prefHeight="48.0" prefWidth="71.0" text="100%" textAlignment="CENTER">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
                   <Button mnemonicParsing="false" onAction="#onZoomOut" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent; -fx-background-radius: 5;">
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">

@@ -10,24 +10,28 @@ public class ToolsShape implements ITools {
 
     public boolean isTool(ToolsTypes type) {
         /**
-         * Retourne vrai si la forme est de type `type`.
+         * Vérifie si le type de l'outil est celui de l'outil courant.
          *
-         * @param type Le type de forme à comparer
+         * @param type Type de l'outil
+         * @return true si le type de l'outil est celui de l'outil courant, false sinon
          */
         return ToolsShape.type == type;
     }
 
-    public void draw(Canvas canvas, Image previousImage, Coord posCurrent, IShape shapeToolsSelected) {
+    public void draw(Canvas canvas, Image prevImage, Coord pCurrent, IShape shape) {
         /**
          * Dessine la forme.
          *
-         * @param gc Le contexte graphique
+         * @param canvas    Canvas sur lequel dessiner
+         * @param prevImage Image précédente
+         * @param pCurrent  Coordonnées de la souris
+         * @param shape     Forme à dessiner
          */
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        gc.drawImage(previousImage, 0, 0);
+        gc.drawImage(prevImage, 0, 0);
 
-        shapeToolsSelected.setEndCoord(posCurrent);
-        shapeToolsSelected.draw(gc);
+        shape.setPEnd(pCurrent);
+        shape.draw(gc);
     }
 }

@@ -12,151 +12,92 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.*;
-import javafx.scene.text.Text;
 import javafx.stage.*;
 import javax.imageio.ImageIO;
 
 public class Controller {
-
+    // Déclare les attributs de l'app
     public Model model = new Model();
-
-    // Déclare les attricuts de l'états de l'application
+    private Coord posStart, posCurrent = new Coord();
     private String selectedStyle = "-fx-background-color: #D3E8EE";
 
-    public Coord posStart = new Coord();
-    public Coord posCurrent = new Coord();
-    public Coord posOpposite = new Coord();
-    public IShape shapeToolsSelected = new ShapeLine(posStart, model.getToolSize(), model.getColor());
+    // Déclare les attributs de l'outil
+    public IShape selectedShape = new ShapeLine(posStart, model.getSize(), model.getColor());
+    public ITools selectedTools = new ToolsShape();
 
-    public ITools toolSelected = new ToolsShape();
-
+    // Déclare les attributs de l'interface
     private Image previousImage;
-    public static boolean halfCtrlSPressed = false;
-    public static boolean halfCtrlNPressed = false;
-    public static boolean halfCtrlOPressed = false;
-    public static boolean halfCtrlWPressed = false;
+    public static boolean isPressedCtrlS, isPressedCtrlN, isPressedCtrlO, isPressedCtrlW = false;
 
     // Déclare les attributs de la vue
-
     @FXML
     private Canvas canvas;
-
     @FXML
-    private Label lblLog;
-
+    private Label lblLog, lblZoom;
     @FXML
-    private Text lblZoom;
-
-    @FXML
-    private TextField fileTitle;
-
+    private TextField inputFilename;
     @FXML
     private MenuItem btnNew, btnOpen, btnSave, btnClose;
-
     @FXML
-    private MenuButton btnSize, btnShape;
-
+    private MenuButton btnShape;
     @FXML
     private CustomMenuItem btnRect, btnCircle, btnTriangle;
-
     @FXML
     private TextField inputSize;
-
     @FXML
-    private Button btnLine, btnEraser, upSize, downSize, btnSelect, btnFront, btnBack, btnText;
-
-    private Button btnPen = new Button();
-
+    private Button btnLine, btnEraser, btnSizeUp, btnSizeDown, btnSelection, btnFront, btnBack, btnText;
     @FXML
     private ToggleGroup groupSize;
-
     @FXML
     private ColorPicker cPicker;
-
     @FXML
     private DialogPane helpPane;
 
     @FXML
-    public void handle(KeyEvent ke) {
+    private void onEditFilename(ActionEvent event) {
         /**
-         * Raccourcis clavier
+         * Editer le nom du fichier
+         * 
          */
-        // Ctrl + S
-        if (ke.getCode() == KeyCode.CONTROL) {
-            halfCtrlSPressed = true;
-        } else if (ke.getCode() == KeyCode.S && halfCtrlSPressed) {
-            halfCtrlSPressed = false;
-            onSave(null);
-        } else {
-            halfCtrlSPressed = false;
-        }
-        // Ctrl + N
-        if (ke.getCode() == KeyCode.CONTROL) {
-            halfCtrlNPressed = true;
-        } else if (ke.getCode() == KeyCode.N && halfCtrlNPressed) {
-            halfCtrlNPressed = false;
-            onNew(null);
-        } else {
-            halfCtrlNPressed = false;
-        }
-        // Ctrl + O
-        if (ke.getCode() == KeyCode.CONTROL) {
-            halfCtrlOPressed = true;
-        } else if (ke.getCode() == KeyCode.O && halfCtrlOPressed) {
-            halfCtrlOPressed = false;
-            onOpen(null);
-        } else {
-            halfCtrlOPressed = false;
-        }
-        // Ctrl + W
-        if (ke.getCode() == KeyCode.CONTROL) {
-            halfCtrlWPressed = true;
-        } else if (ke.getCode() == KeyCode.W && halfCtrlWPressed) {
-            halfCtrlWPressed = false;
-            onExit(null);
-        } else {
-            halfCtrlWPressed = false;
-        }
+        model.setfileTitle(inputFilename.getText());
     }
 
     @FXML
-    void setfileTitle(ActionEvent event) {
-        model.setfileTitle(fileTitle.getText());
-    }
-
-    @FXML
-    void onNew(ActionEvent event) {
+    private void onNew(ActionEvent event) {
         /**
-         * Nouveau fichier
+         * Créer un nouveau fichier
          */
-        // Vérifier si le canvas n'est pas vide, et propose de sauvegarder
+
+        // Si le canvas n'est pas vide propose de sauvegarder
         if (!model.isCanvasEmpty(canvas)) {
             boolean result = model.showSaveAlert();
-            if (result == true) {
+
+            if (result == true)
                 onSave(event);
-            }
+
         }
+
         // Vider le canvas
         model.clearCanvas(canvas);
-        // Réinitialiser les attributs
-        model.resetAttributes();
+        model.reset();
         cancelStyle();
-        btnPen.setStyle(selectedStyle);
-        lblLog.setText("Nouveau fichier");
+
+        lblLog.setText("Création d'un nouveau fichier");
     }
 
     @FXML
-    void onOpen(ActionEvent event) {
+    private void onOpen(ActionEvent event) {
         /**
          * Ouvrir un fichier
          */
-        // Vérifier si le canvas n'est pas vide, et propose de sauvegarder
+        // Si le canvas n'est pas vide et propose de sauvegarder
         if (!model.isCanvasEmpty(canvas)) {
             boolean result = model.showSaveAlert();
-            if (result) {
+
+            if (result)
                 onSave(event);
-            }
         }
+
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Ouvrir un fichier PNG");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers PNG", "*.png"));
@@ -166,7 +107,7 @@ public class Controller {
             // Charger l'image depuis le fichier
             Image image = new Image(file.toURI().toString());
             model.setfileTitle(file.getName().replace(".png", ""));
-            fileTitle.setText(model.getfileTitle());
+            inputFilename.setText(model.getfileTitle());
 
             // Redimensionner l'image à la taille du canva
             double targetWidth = canvas.getWidth();
@@ -174,6 +115,7 @@ public class Controller {
             double scaleFactor = Math.min(targetWidth / image.getWidth(), targetHeight / image.getHeight());
             double scaledWidth = image.getWidth() * scaleFactor;
             double scaledHeight = image.getHeight() * scaleFactor;
+
             ImageView imageView = new ImageView(image);
             imageView.setFitWidth(scaledWidth);
             imageView.setFitHeight(scaledHeight);
@@ -183,16 +125,14 @@ public class Controller {
             gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
             gc.drawImage(imageView.snapshot(null, null), 0, 0);
             cancelStyle();
-            btnPen.setStyle(selectedStyle);
         }
     }
 
     @FXML
-    void onSave(ActionEvent event) {
+    private void onSave(ActionEvent event) {
         /**
-         * Enregistrer l'image du canvas dans un fichier PNG.
+         * Sauvegarder le fichier
          */
-
         // Récupérer la racine de la scène
         Node node = canvas;
         Stage stage = (Stage) node.getScene().getWindow();
@@ -219,39 +159,38 @@ public class Controller {
                 ex.printStackTrace();
             }
         }
+
         lblLog.setText("Fichier enregistré");
     }
 
     @FXML
-    void onExit(ActionEvent event) {
+    private void onExit(ActionEvent event) {
         /**
-         * Fermer l'application.
+         * Fermer l'application
          */
         // Vérifier si le canvas n'est pas vide, et propose de sauvegarder
         if (!model.isCanvasEmpty(canvas)) {
             boolean result = model.showSaveAlert();
-            if (result == true) {
+
+            if (result == true)
                 onSave(event);
-            }
+
         }
+
         lblLog.setText("Fermeture de l'application");
         Platform.exit();
     }
 
     @FXML
-    void onHelp(ActionEvent event) {
+    private void onHelp(ActionEvent event) {
         /**
          * Afficher l'aide.
          */
-        if (helpPane.isVisible() == true) {
-            helpPane.setVisible(false);
-        } else {
-            helpPane.setVisible(true);
-        }
+        helpPane.setVisible(!helpPane.isVisible());
     }
 
     @FXML
-    void onZoomIn(ActionEvent event) {
+    private void onZoomIn(ActionEvent event) {
         /**
          * Zoomer en avant sur l'image.
          */
@@ -260,7 +199,7 @@ public class Controller {
     }
 
     @FXML
-    void onZoomOut(ActionEvent event) {
+    private void onZoomOut(ActionEvent event) {
         /**
          * Zoomer en arrière sur l'image.
          */
@@ -269,7 +208,7 @@ public class Controller {
     }
 
     @FXML
-    void selectColor(ActionEvent event) {
+    private void onChangeColor(ActionEvent event) {
         /**
          * Sélectionner une couleur.
          */
@@ -277,229 +216,273 @@ public class Controller {
         lblLog.setText("Couleur modifiée");
     }
 
-    public void selectText() {
+    @FXML
+    private void onChangeSize() {
+        /**
+         * Modifier la taille de l'outil.
+         */
+        String text = inputSize.getText();
+        try {
+            int newSize = Integer.parseInt(text);
+
+            if (newSize < 1 || newSize > 20)
+                throw new NumberFormatException();
+
+            model.setSize(newSize);
+            lblLog.setText("Taille de l'outil modifiée.");
+            inputSize.setText(model.getSizeStr());
+        }
+
+        catch (NumberFormatException ex) {
+            inputSize.setText(model.getSizeStr());
+            lblLog.setText("Veuillez entrer un nombre valide.");
+        }
+    }
+
+    @FXML
+    private void onIncreaseSize(ActionEvent event) {
+        /**
+         * Augmenter la taille de l'outil.
+         */
+        if (model.getSize() != 20) {
+            model.increaseSize();
+            inputSize.setText(Integer.toString(model.getSize()));
+            lblLog.setText("La taille de l'outil a été augmentée.");
+        }
+    }
+
+    @FXML
+    private void onDecreaseSize(ActionEvent event) {
+        /**
+         * Diminuer la taille de l'outil.
+         */
+        if (model.getSize() != 1) {
+            model.decreaseSize();
+            inputSize.setText(model.getSizeStr());
+            lblLog.setText("La taille de l'outil a été diminuée.");
+        }
+    }
+
+    @FXML
+    private void onEraser(ActionEvent event) {
+        /**
+         * Sélectionner la gomme.
+         */
+        cancelStyle();
+        btnEraser.setStyle(selectedStyle);
+        lblLog.setText("Cliquer sur une forme pour la supprimer.");
+
+        model.shapeUnselect();
+        selectedTools = new ToolsEraser();
+    }
+
+    @FXML
+    private void onAddText() {
         /**
          * Sélectionner le texte.
          */
         cancelStyle();
         btnText.setStyle(selectedStyle);
         lblLog.setText("Cliquer pour ajouter du texte");
-        model.unselectShape();
-        shapeToolsSelected = new ShapeText(posCurrent, model.getToolSize(), model.getColor());
-        toolSelected = new ToolsShape();
+
+        model.shapeUnselect();
+        selectedShape = new ShapeText(posCurrent, model.getSize(), model.getColor());
+        selectedTools = new ToolsShape();
     }
 
     @FXML
-    public void selectSize(ActionEvent event) {
-        /**
-         * Sélectionner la taille de l'outils.
-         */
-        RadioButton selectedSize = (RadioButton) groupSize.getSelectedToggle();
-        String strSize = selectedSize.getText();
-
-        model.setToolSize(strSize);
-        btnSize.setText(selectedSize.getText());
-    }
-
-    @FXML
-    public void listenSize() {
-        String text = inputSize.getText();
-        try {
-            int newSize = Integer.parseInt(text);
-            if (newSize < 1 || newSize > 20) {
-                throw new NumberFormatException();
-            }
-            model.setToolSize(newSize);
-            lblLog.setText("La taille de l'outil a été modifiée.");
-            inputSize.setText(model.getToolSizeStr());
-        } catch (NumberFormatException ex) {
-            inputSize.setText(model.getToolSizeStr());
-            lblLog.setText("Veuillez entrer un nombre valide.");
-        }
-    }
-
-    @FXML
-    public void onPressIncreaseToolSize(ActionEvent event) {
-        /**
-         * Augmenter la taille de l'outil.
-         */
-        if (model.getToolSize() != 20) {
-            model.increaseToolSize();
-            inputSize.setText(Integer.toString(model.getToolSize()));
-            lblLog.setText("La taille de l'outil a été augmentée.");
-        }
-    }
-
-    @FXML
-    public void onPressDecreaseToolSize(ActionEvent event) {
-        /**
-         * Diminuer la taille de l'outil.
-         */
-        if (model.getToolSize() != 1) {
-            model.decreaseToolSize();
-            inputSize.setText(model.getToolSizeStr());
-            lblLog.setText("La taille de l'outil a été diminuée.");
-        }
-    }
-
-    void selectPen(ActionEvent event) {
-        /**
-         * Sélectionner le pinceau.
-         */
-        toolSelected = new ToolsPen(posStart, model.getColor(), model.getToolSize());
-        cancelStyle();
-        model.setColor(cPicker);
-
-        lblLog.setText("Pinceau prêt à être utilisé.");
-        btnPen.setStyle(selectedStyle);
-        model.unselectShape();
-    }
-
-    @FXML
-    void selectEraser(ActionEvent event) {
-        /**
-         * Sélectionner la gomme.
-         */
-        toolSelected = new ToolsEraser();
-        cancelStyle();
-
-        lblLog.setText("Cliquer sur une forme pour la supprimer.");
-        btnEraser.setStyle(selectedStyle);
-        model.unselectShape();
-    }
-
-    @FXML
-    void selectShape(ActionEvent event) {
-        /**
-         * Sélectionner une forme.
-         */
-        cancelStyle();
-        btnShape.setStyle(selectedStyle);
-        lblLog.setText("Choisir une forme à dessiner.");
-        btnShape.setStyle(selectedStyle);
-        model.unselectShape();
-    }
-
-    @FXML
-    void selectLine(ActionEvent event) {
+    private void onAddLine(ActionEvent event) {
         /**
          * Sélectionner la forme ligne.
          */
         cancelStyle();
-        model.setColor(cPicker);
-        lblLog.setText("Cliquer et déplacer pour dessiner une ligne.");
         btnLine.setStyle(selectedStyle);
-        shapeToolsSelected = new ShapeLine(posStart, model.getToolSize(), model.getColor());
-        toolSelected = new ToolsShape();
-        model.unselectShape();
+        lblLog.setText("Cliquer et déplacer pour dessiner une ligne.");
+
+        model.shapeUnselect();
+        model.setColor(cPicker);
+        selectedShape = new ShapeLine(posStart, model.getSize(), model.getColor());
+        selectedTools = new ToolsShape();
     }
 
     @FXML
-    void selectRectangle(ActionEvent event) {
+    private void onAddRect(ActionEvent event) {
         /**
          * Sélectionner la forme rectangle.
          */
         cancelStyle();
-        model.setColor(cPicker);
-
-        lblLog.setText("Cliquer et déplacer pour dessiner un rectangle.");
         btnRect.setStyle(selectedStyle);
         btnShape.setStyle(selectedStyle);
-        shapeToolsSelected = new ShapeRect(posStart, model.getToolSize());
-        toolSelected = new ToolsShape();
-        model.unselectShape();
+        lblLog.setText("Cliquer et déplacer pour dessiner un rectangle.");
+
+        model.shapeUnselect();
+        model.setColor(cPicker);
+        selectedShape = new ShapeRect(posStart, model.getSize());
+        selectedTools = new ToolsShape();
     }
 
     @FXML
-    void selectCircle(ActionEvent event) {
+    private void onAddCircle(ActionEvent event) {
         /**
          * Sélectionner la forme cercle.
          */
         cancelStyle();
-        btnShape.setStyle(selectedStyle);
-        model.setColor(cPicker);
-        lblLog.setText("Cliquer et déplacer pour dessiner un cercle.");
         btnCircle.setStyle(selectedStyle);
-        shapeToolsSelected = new ShapeCircle(posStart, model.getToolSize());
-        toolSelected = new ToolsShape();
-        model.unselectShape();
+        btnShape.setStyle(selectedStyle);
+        lblLog.setText("Cliquer et déplacer pour dessiner un cercle.");
+
+        model.shapeUnselect();
+        model.setColor(cPicker);
+        selectedShape = new ShapeCircle(posStart, model.getSize());
+        selectedTools = new ToolsShape();
     }
 
     @FXML
-    void selectTriangle(ActionEvent event) {
+    private void onAddTrig(ActionEvent event) {
         /**
          * Sélectionner la forme triangle.
          */
         cancelStyle();
-        model.setColor(cPicker);
-        lblLog.setText("Cliquer et déplacer pour dessiner un triangle.");
         btnTriangle.setStyle(selectedStyle);
         btnShape.setStyle(selectedStyle);
-        shapeToolsSelected = new ShapeTriangle(posStart, model.getToolSize());
-        toolSelected = new ToolsShape();
-        model.unselectShape();
+        lblLog.setText("Cliquer et déplacer pour dessiner un triangle.");
+
+        model.shapeUnselect();
+        model.setColor(cPicker);
+        selectedShape = new ShapeTriangle(posStart, model.getSize());
+        selectedTools = new ToolsShape();
     }
 
     @FXML
-    void selectObject(ActionEvent event) {
-        cancelStyle();
-        toolSelected = new ToolsSelector();
-        lblLog.setText("Cliquer sur une forme pour la sélectionner.");
-        btnSelect.setStyle(selectedStyle);
-    }
-
-    @FXML
-    public void cancelStyle() {
-        String defaultStyle = "-fx-background-color: transparent";
-        btnEraser.setStyle(defaultStyle);
-        btnPen.setStyle(defaultStyle);
-        btnShape.setStyle(defaultStyle);
-        btnText.setStyle(defaultStyle);
-        btnSelect.setStyle(defaultStyle);
-        btnLine.setStyle(defaultStyle);
-    }
-
-    @FXML
-    public void onPressToFront() {
+    private void onToFront() {
+        /**
+         * Mettre la forme sélectionnée au premier plan.
+         */
         model.toFront();
     }
 
     @FXML
-    public void onPressToBack() {
+    private void onToBack() {
+        /**
+         * Mettre la forme sélectionnée au dernier plan.
+         */
         model.toBack();
     }
 
     @FXML
-    public void initialize() {
+    private void onSelection(ActionEvent event) {
+        /**
+         * Sélectionner la forme.
+         */
+        cancelStyle();
+        lblLog.setText("Cliquer sur une forme pour la sélectionner.");
+        btnSelection.setStyle(selectedStyle);
+
+        selectedTools = new ToolsSelector();
+    }
+
+    @FXML
+    private void keyEvent(KeyEvent e) {
+        /**
+         * Gestion des raccourcis clavier
+         * 
+         * Ctrl + S : Sauvegarder
+         * Ctrl + N : Nouveau fichier
+         * Ctrl + O : Ouvrir un fichier
+         * Ctrl + W : Fermer l'application
+         * 
+         */
+        // Ctrl + S
+        if (e.getCode() == KeyCode.CONTROL)
+            isPressedCtrlS = true;
+
+        else if (e.getCode() == KeyCode.S && isPressedCtrlS) {
+            isPressedCtrlS = false;
+            onSave(null);
+        }
+
+        else
+            isPressedCtrlS = false;
+
+        // Ctrl + N
+        if (e.getCode() == KeyCode.CONTROL)
+            isPressedCtrlN = true;
+
+        else if (e.getCode() == KeyCode.N && isPressedCtrlN) {
+            isPressedCtrlN = false;
+            onNew(null);
+        }
+
+        else
+            isPressedCtrlN = false;
+
+        // Ctrl + O
+        if (e.getCode() == KeyCode.CONTROL)
+            isPressedCtrlO = true;
+
+        else if (e.getCode() == KeyCode.O && isPressedCtrlO) {
+            isPressedCtrlO = false;
+            onOpen(null);
+        }
+
+        else
+            isPressedCtrlO = false;
+
+        // Ctrl + W
+        if (e.getCode() == KeyCode.CONTROL)
+            isPressedCtrlW = true;
+
+        else if (e.getCode() == KeyCode.W && isPressedCtrlW) {
+            isPressedCtrlW = false;
+            onExit(null);
+
+        } else
+            isPressedCtrlW = false;
+
+    }
+
+    @FXML
+    private void initialize() {
+        /**
+         * Initialisation de l'application.
+         */
         GraphicsContext gc = canvas.getGraphicsContext2D();
         Coord.setCenter(canvas.getWidth() / 2, canvas.getHeight() / 2);
-        model.setGraphicsContext(gc);
-        model.setCanvas(canvas);
-        model.setWidget(btnBack, btnFront, cPicker, lblZoom);
-        model.setInputSize(inputSize);
 
+        // Initialisation du modèle
+        model.setCanvas(canvas);
+        model.setWidget(btnBack, btnFront, cPicker, lblZoom, inputSize);
+
+        // Lorque la souris est en mouvement
         canvas.setOnMouseMoved(e -> {
             Coord mouse = Coord.getCoordMouse(e);
 
-            if (toolSelected.isTool(ToolsTypes.SHAPE))
+            // Outils de forme
+            if (selectedTools.isTool(ToolsTypes.SHAPE))
                 canvas.setCursor(Cursor.CROSSHAIR);
 
-            else if (toolSelected.isTool(ToolsTypes.ERASER))
+            // Outils gomme
+            else if (selectedTools.isTool(ToolsTypes.ERASER))
                 canvas.setCursor(Cursor.HAND);
 
-            else if (toolSelected.isTool(ToolsTypes.SELECT)) {
-                ToolsSelector selector = (ToolsSelector) toolSelected;
+            // Outils de sélection
+            else if (selectedTools.isTool(ToolsTypes.SELECT)) {
+                ToolsSelector selector = (ToolsSelector) selectedTools;
 
+                // Si la souris peut redimensionner la forme horizontalement
                 if (selector.canResizeH(mouse))
                     canvas.setCursor(Cursor.H_RESIZE);
 
+                // Si la souris peut redimensionner la forme verticalement
                 else if (selector.canResizeV(mouse))
                     canvas.setCursor(Cursor.V_RESIZE);
 
+                // Si la souris peut déplacer la forme
                 else if (selector.canMove(mouse))
                     canvas.setCursor(Cursor.MOVE);
 
-                else if (model.isSelectedShape())
+                // Si la souris est sur une forme
+                else if (model.isShapeSelected())
                     canvas.setCursor(Cursor.DEFAULT);
 
                 else
@@ -511,67 +494,92 @@ public class Controller {
 
         });
 
+        // Lorque la souris est pressée
         canvas.setOnMousePressed(e -> {
-            model.updateAppState();
-
-            // Récupère les coordonnées de la souris
-            posStart = Coord.getCoordMouse(e, model.getToolSize());
+            // Réinitialiser les coordonnées
+            posStart = Coord.getCoordMouse(e, model.getSize());
             posCurrent = posStart;
 
+            // Débuter le dessin
             gc.beginPath();
             gc.moveTo(e.getX(), e.getY());
 
-            model.setToolSelected(toolSelected);
+            // Mettre à jour l'état de l'application
+            model.updateApp();
+            model.setSelectedTools(selectedTools);
 
             // Sauvegarder l'image précédente
             previousImage = canvas.snapshot(null, null);
 
-            if (toolSelected.isTool(ToolsTypes.SELECT))
-                model.selectShape(posStart);
+            // Outils de forme
+            if (selectedTools.isTool(ToolsTypes.SELECT))
+                model.shapeSelect(posStart);
 
-            else if (toolSelected.isTool(ToolsTypes.ERASER)) {
-                model.unselectShape();
-                model.removeShape(posStart);
+            // Outils gomme
+            else if (selectedTools.isTool(ToolsTypes.ERASER)) {
+                model.shapeUnselect();
+                model.shapeRemove(posStart);
             }
 
-            else if (toolSelected.isTool(ToolsTypes.SHAPE)) {
-                model.unselectShape();
-                shapeToolsSelected.setToolColor(model.getColor());
-                shapeToolsSelected.setToolSize(model.getToolSize());
-                shapeToolsSelected.initializeCoord(posStart);
+            // Outils de forme
+            else if (selectedTools.isTool(ToolsTypes.SHAPE)) {
+                model.shapeUnselect();
+                selectedShape.setColor(model.getColor());
+                selectedShape.setBdSize(model.getSize());
+                selectedShape.setPStart(posStart);
             }
         });
 
+        // Lorque la souris est déplacée
         canvas.setOnMouseDragged(e -> {
             // Récupère les coordonnées de la souris
-            Coord mouse = Coord.getCoordMouse(e, model.getToolSize());
+            Coord mouse = Coord.getCoordMouse(e, model.getSize());
             posCurrent = mouse;
 
-            if (toolSelected.isTool(ToolsTypes.SHAPE))
-                ((ToolsShape) toolSelected).draw(canvas, previousImage, posCurrent, shapeToolsSelected);
+            // Outils de forme
+            if (selectedTools.isTool(ToolsTypes.SHAPE))
+                ((ToolsShape) selectedTools).draw(canvas, previousImage, posCurrent, selectedShape);
 
-            else if (toolSelected.isTool(ToolsTypes.SELECT))
-                model.onDragSelect(posStart, posCurrent);
+            // Outils de sélection
+            else if (selectedTools.isTool(ToolsTypes.SELECT))
+                model.onShapeDrag(posStart, posCurrent);
 
         });
 
+        // Lorque la souris est relâchée
         canvas.setOnMouseReleased(e -> {
             // Récupère les coordonnées de la souris
-            Coord mouse = Coord.getCoordMouse(e, model.getToolSize());
+            Coord mouse = Coord.getCoordMouse(e, model.getSize());
             posCurrent = mouse;
 
-            if (toolSelected.isTool(ToolsTypes.SHAPE)) {
-                ((ToolsShape) toolSelected).draw(canvas, previousImage, posCurrent, shapeToolsSelected);
-                shapeToolsSelected.finishShape();
-                model.addShape(shapeToolsSelected.copy());
+            // Outils de forme
+            if (selectedTools.isTool(ToolsTypes.SHAPE)) {
+                ((ToolsShape) selectedTools).draw(canvas, previousImage, posCurrent, selectedShape);
+                selectedShape.finish();
+                model.shapeAdd(selectedShape.copy());
                 model.redraw();
             }
 
-            else if (toolSelected.isTool(ToolsTypes.SELECT))
-                if (model.isSelectedShape()) {
-                    Coord[] coords = model.getShapeSelected().getSelectedCoords();
-                    ((ToolsSelector) toolSelected).setSelection(coords[0], coords[1]);
+            // Outils de sélection
+            else if (selectedTools.isTool(ToolsTypes.SELECT))
+                if (model.isShapeSelected()) {
+                    Coord[] coords = model.getSelectedShape().getArea();
+                    ((ToolsSelector) selectedTools).setSelection(coords[0], coords[1]);
                 }
         });
     }
+
+    @FXML
+    private void cancelStyle() {
+        /**
+         * Réinitialise le style des boutons.
+         */
+        String defaultStyle = "-fx-background-color: transparent";
+        btnEraser.setStyle(defaultStyle);
+        btnShape.setStyle(defaultStyle);
+        btnText.setStyle(defaultStyle);
+        btnSelection.setStyle(defaultStyle);
+        btnLine.setStyle(defaultStyle);
+    }
+
 }

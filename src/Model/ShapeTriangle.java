@@ -6,121 +6,218 @@ import javafx.scene.paint.Color;
 public class ShapeTriangle implements IShape {
 
 	public ShapeTypes type = ShapeTypes.TRIANGLE;
-	private Coord start, end, opposite = new Coord();
-	private int toolSize;
-	private Color toolColor;
-	private int offset = 10;
-	private double zoomFactor = 1.0;
+	private double offset = Constant.DEFAULT_OFFSET;
+	private double zoomFactor = Constant.DEFAULT_ZOOM;
 
-	public ShapeTriangle(Coord c, int toolSize) {
-		this.start = c;
-		this.toolSize = toolSize;
+	private Coord pStart, pEnd, pOpposite = new Coord();
+	private int bdSize;
+	private Color color;
+
+	public ShapeTriangle(Coord pStart, int size) {
+		/**
+		 * Crée une forme de type triangle.
+		 * 
+		 * @param start Coordonnées du point de départ
+		 * @param size  Taille de la bordure
+		 */
+		this.pStart = pStart;
+		this.bdSize = size;
 	}
 
-	private ShapeTriangle(Coord start, Coord end, int toolSize, Color toolColor) {
-		this.start = start;
-		this.end = end;
-		this.toolSize = toolSize;
-		this.opposite = start.opposite(end);
-		this.toolColor = toolColor;
+	private ShapeTriangle(Coord pStart, Coord pEnd, int size, Color color) {
+		/**
+		 * Crée une forme de type triangle.
+		 * 
+		 * @param pStart Coordonnées du point de départ
+		 * @param pEnd   Coordonnées du point de fin
+		 * @param size   Taille de la bordure
+		 * @param color  Couleur de la bordure
+		 */
+		this.pStart = pStart;
+		this.pEnd = pEnd;
+		this.pOpposite = pStart.opposite(pEnd);
+
+		this.bdSize = size;
+		this.color = color;
 	}
 
-	public Coord getStartCoord() {
-		return this.start;
+	public void setColor(Color color) {
+		/**
+		 * Initialise la couleur de la bordure.
+		 * 
+		 * @param color Couleur de la bordure
+		 */
+		this.color = color;
 	}
 
-	public Coord getEndCoord() {
-		return this.end;
+	public void setBdSize(int size) {
+		/**
+		 * Initialise la taille de la bordure.
+		 * 
+		 * @param size Taille de la bordure
+		 */
+		this.bdSize = size;
 	}
 
-	public int getToolSize() {
-		return this.toolSize;
+	public void setPStart(Coord pStart) {
+		/**
+		 * Initialise les coordonnées du point de départ.
+		 * 
+		 * @param pStart Coordonnées du point de départ
+		 */
+		this.pStart = pStart;
 	}
 
-	public Color getToolColor() {
-		return this.toolColor;
+	public void setPEnd(Coord pEnd) {
+		/**
+		 * Initialise les coordonnées du point de fin.
+		 * 
+		 * @param pEnd Coordonnées du point de fin
+		 */
+		this.pEnd = pEnd;
+		this.pOpposite = this.pStart.opposite(this.pEnd);
 	}
 
-	public void setToolColor(Color color) {
-		this.toolColor = color;
+	public Coord getPStart() {
+		/**
+		 * Retourne les coordonnées du point de départ.
+		 * 
+		 * @return Coordonnées du point de départ
+		 */
+		return this.pStart;
 	}
 
-	public void setToolSize(int size) {
-		this.toolSize = size;
+	public Coord getPEnd() {
+		/**
+		 * Retourne les coordonnées du point de fin.
+		 * 
+		 * @return Coordonnées du point de fin
+		 */
+		return this.pEnd;
+	}
+
+	public int getBdSize() {
+		/**
+		 * Retourne la taille de la bordure.
+		 * 
+		 * @return Taille de la bordure
+		 */
+		return this.bdSize;
+	}
+
+	public Color getColor() {
+		/**
+		 * Retourne la couleur de la bordure.
+		 * 
+		 * @return Couleur de la bordure
+		 */
+		return this.color;
+	}
+
+	public Coord[] getArea() {
+		/**
+		 * Retourne les coordonnées du rectangle englobant la forme.
+		 * 
+		 * @return Coordonnées du rectangle englobant la forme
+		 */
+		double minX = Math.min(Math.min(pStart.x, pEnd.x), pOpposite.x);
+		double minY = Math.min(Math.min(pStart.y, pEnd.y), pOpposite.y);
+		double maxX = Math.max(Math.max(pStart.x, pEnd.x), pOpposite.x);
+		double maxY = Math.max(Math.max(pStart.y, pEnd.y), pOpposite.y);
+
+		return new Coord[] { new Coord(minX, minY), new Coord(maxX, maxY) };
 	}
 
 	public boolean isShape(ShapeTypes type) {
+		/**
+		 * Vérifie si la forme est de type type.
+		 * 
+		 * @param type Type de la forme
+		 * @return Vrai si la forme est de type type, faux sinon
+		 */
 		return this.type == type;
 	}
 
-	public void initializeCoord(Coord c) {
-		this.start = c;
-	}
+	public boolean isInArea(Coord coord) {
+		/**
+		 * Vérifie si les coordonnées coord sont dans la zone de la forme.
+		 * 
+		 * @param coord Coordonnées à vérifier
+		 * @return Vrai si les coordonnées coord sont dans la zone de la forme, faux
+		 *         sinon
+		 */
+		double alpha = ((pOpposite.y - pEnd.y) * (coord.x - pEnd.x) + (pEnd.x - pOpposite.x) * (coord.y - pEnd.y)) /
+				((pOpposite.y - pEnd.y) * (pStart.x - pEnd.x) + (pEnd.x - pOpposite.x) * (pStart.y - pEnd.y));
 
-	public boolean isIn(Coord c) {
-		double alpha = ((opposite.y - end.y) * (c.x - end.x) + (end.x - opposite.x) * (c.y - end.y)) /
-				((opposite.y - end.y) * (start.x - end.x) + (end.x - opposite.x) * (start.y - end.y));
-
-		double beta = ((end.y - start.y) * (c.x - end.x) + (start.x - end.x) * (c.y - end.y)) /
-				((opposite.y - end.y) * (start.x - end.x) + (end.x - opposite.x) * (start.y - end.y));
+		double beta = ((pEnd.y - pStart.y) * (coord.x - pEnd.x) + (pStart.x - pEnd.x) * (coord.y - pEnd.y)) /
+				((pOpposite.y - pEnd.y) * (pStart.x - pEnd.x) + (pEnd.x - pOpposite.x) * (pStart.y - pEnd.y));
 
 		return alpha + offset >= 0 && beta + offset >= 0 && alpha + beta - offset <= 1;
 	}
 
 	public IShape copy() {
-		return new ShapeTriangle(start, end, toolSize, toolColor);
+		/**
+		 * Retourne une copie de la forme.
+		 * 
+		 * @return Copie de la forme
+		 */
+		return new ShapeTriangle(pStart, pEnd, bdSize, color);
 	}
 
-	public Coord[] getSelectedCoords() {
-		double minX = Math.min(Math.min(start.x, end.x), opposite.x);
-		double minY = Math.min(Math.min(start.y, end.y), opposite.y);
-		double maxX = Math.max(Math.max(start.x, end.x), opposite.x);
-		double maxY = Math.max(Math.max(start.y, end.y), opposite.y);
+	public void moveTo(Coord coord) {
+		/**
+		 * Déplace la forme aux coordonnées coord.
+		 * 
+		 * @param coord Coordonnées de destination
+		 */
+		double dx = coord.x - ((pStart.x + pEnd.x) / 2.0);
+		double dy = coord.y - ((pStart.y + pEnd.y) / 2.0);
 
-		return new Coord[] { new Coord(minX, minY), new Coord(maxX, maxY) };
-	}
-
-	public void moveTo(Coord mouse) {
-		double dx = mouse.x - ((start.x + end.x) / 2.0);
-		double dy = mouse.y - ((start.y + end.y) / 2.0);
-
-		start.moveTo(dx, dy);
-		end.moveTo(dx, dy);
-		opposite.moveTo(dx, dy);
+		pStart.moveTo(dx, dy);
+		pEnd.moveTo(dx, dy);
+		pOpposite.moveTo(dx, dy);
 	}
 
 	public void draw(GraphicsContext gc) {
-		double[] xPoints = new double[] { start.x, end.x, opposite.x };
-		double[] yPoints = new double[] { start.y, end.y, opposite.y };
+		/**
+		 * Dessine la forme.
+		 * 
+		 * @param gc Contexte graphique
+		 */
+		double[] xPoints = new double[] { pStart.x, pEnd.x, pOpposite.x };
+		double[] yPoints = new double[] { pStart.y, pEnd.y, pOpposite.y };
 
-		gc.setStroke(this.toolColor);
-		gc.setLineWidth(this.toolSize);
-		gc.setFill(toolColor);
+		gc.setStroke(this.color);
+		gc.setLineWidth(this.bdSize);
+		gc.setFill(color);
 		gc.fillPolygon(xPoints, yPoints, 3);
 	}
 
-	public void setEndCoord(Coord end) {
-		this.end = end;
-		this.opposite = this.start.opposite(this.end);
-	}
-
-	public void finishShape() {
-		// this.opposite = start.opposite(end);
-	}
-
 	public void zoomIn() {
-		this.zoomFactor = Math.max(.1, this.zoomFactor - .1);
+		/**
+		 * Zoom sur l'objet courant
+		 */
+		this.zoomFactor = Math.max(Constant.MIN_ZOOM, this.zoomFactor - Constant.ZOOM_STEP);
 		zoom();
 	}
 
 	public void zoomOut() {
-		this.zoomFactor = Math.min(2.1, this.zoomFactor + .1);
+		/**
+		 * Dézoom sur l'objet courant
+		 */
+		this.zoomFactor = Math.min(Constant.MAX_ZOOM, this.zoomFactor + Constant.ZOOM_STEP);
 		zoom();
 	}
 
 	public void zoom() {
-		start.centerZoom(this.zoomFactor);
-		end.centerZoom(this.zoomFactor);
-		opposite.centerZoom(this.zoomFactor);
+		/**
+		 * Applique un zoom sur les coordonnées de l'objet courant
+		 */
+		pStart.centerZoom(this.zoomFactor);
+		pEnd.centerZoom(this.zoomFactor);
+		pOpposite.centerZoom(this.zoomFactor);
+	}
+
+	public void finish() {
 	}
 }

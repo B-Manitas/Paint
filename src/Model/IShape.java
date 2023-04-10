@@ -7,35 +7,35 @@ import javafx.scene.paint.Color;
  * ShapeInterface
  */
 public interface IShape {
+    public void setPStart(Coord pStart);
+
+    public void setPEnd(Coord pEnd);
+
+    public void setColor(Color color);
+
+    public void setBdSize(int size);
+
+    public Coord[] getArea();
+
+    public int getBdSize();
+
+    public Color getColor();
+
+    public Coord getPStart();
+
+    public Coord getPEnd();
+
+    public boolean isInArea(Coord coord);
+
     public boolean isShape(ShapeTypes type);
-
-    public void initializeCoord(Coord c);
-
-    public boolean isIn(Coord c);
 
     public IShape copy();
 
-    public Coord[] getSelectedCoords();
-
-    public void moveTo(Coord mouse);
-
-    public int getToolSize();
-
-    public Color getToolColor();
-
-    public void setToolColor(Color color);
-
-    public void setToolSize(int size);
-
-    public Coord getStartCoord();
-
-    public Coord getEndCoord();
-
-    public void setEndCoord(Coord end);
+    public void moveTo(Coord coord);
 
     public void draw(GraphicsContext gc);
 
-    public void finishShape();
+    public void finish();
 
     public void zoomIn();
 

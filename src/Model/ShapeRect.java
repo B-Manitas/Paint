@@ -7,140 +7,214 @@ import javafx.scene.shape.Shape;
 public class ShapeRect extends Shape implements IShape {
 
     private ShapeTypes type = ShapeTypes.RECTANGLE;
-    private Coord start, end;
-    private int toolSize;
-    private Color toolColor;
-    private int offset = 10;
-    private double zoomFactor = 1.0;
+    private double offset = Constant.DEFAULT_OFFSET;
+    private double zoomFactor = Constant.DEFAULT_ZOOM;
 
-    public ShapeRect(Coord c, int toolSize) {
-        /**
-         * Crée une forme de type rectangle.
-         *
-         * @param c        Coordonnées du point de départ
-         * @param toolSize Taille de l'outil
-         */
-        this.start = c;
-        this.toolSize = toolSize;
-    }
+    private Coord pStart, pEnd;
+    private int bdSize;
+    private Color color;
 
-    private ShapeRect(Coord start, Coord end, int toolSize, Color toolColor) {
+    public ShapeRect(Coord pStart, int size) {
         /**
          * Crée une forme de type rectangle.
          *
          * @param start Coordonnées du point de départ
-         * @param end   Coordonnées du point d'arrivée
+         * @param size  Taille de la bordure
          */
-        this.start = start;
-        this.end = end;
-        this.toolSize = toolSize;
-        this.toolColor = toolColor;
+        this.pStart = pStart;
+        this.bdSize = size;
     }
 
-    public Coord getStartCoord() {
-        return this.start;
-    }
-
-    public Coord getEndCoord() {
-        return this.end;
-    }
-
-    public boolean isShape(ShapeTypes type) {
+    private ShapeRect(Coord pStart, Coord pEnd, int bdSize, Color color) {
         /**
-         * Retourne vrai si la forme est de type `type`.
+         * Crée une forme de type rectangle.
          *
-         * @param type Le type de forme à comparer
+         * @param pStart Coordonnées du point de départ
+         * @param pEnd   Coordonnées du point de fin
+         * @param bdSize Taille de la bordure
+         * @param color  Couleur de la bordure
          */
-        return this.type == type;
+        this.pStart = pStart;
+        this.pEnd = pEnd;
+        this.bdSize = bdSize;
+        this.color = color;
     }
 
-    public int getToolSize() {
-        return this.toolSize;
+    public void setColor(Color color) {
+        /**
+         * Initialise la couleur de la bordure.
+         * 
+         * @param color Couleur de la bordure
+         */
+        this.color = color;
     }
 
-    public Color getToolColor() {
-        return this.toolColor;
+    public void setBdSize(int size) {
+        /**
+         * Initialise la taille de la bordure.
+         * 
+         * @param size Taille de la bordure
+         */
+        this.bdSize = size;
     }
 
-    public void setToolColor(Color color) {
-        this.toolColor = color;
+    public void setPStart(Coord pStart) {
+        /**
+         * Initialise les coordonnées du point de départ.
+         * 
+         * @param pStart Coordonnées du point de départ
+         */
+        this.pStart = pStart;
     }
 
-    public void setToolSize(int size) {
-        this.toolSize = size;
+    public void setPEnd(Coord pEnd) {
+        /**
+         * Initialise les coordonnées du point de fin.
+         * 
+         * @param pEnd Coordonnées du point de fin
+         */
+        this.pEnd = pEnd;
     }
 
-    public void setEndCoord(Coord end) {
-        this.end = end;
+    public Coord getPStart() {
+        /**
+         * Retourne les coordonnées du point de départ.
+         * 
+         * @return Les coordonnées du point de départ
+         */
+        return this.pStart;
     }
 
-    public void finishShape() {
-        if (this.start.x < this.end.x || this.start.y < this.end.y) {
-            System.out.println("Inverting coords");
-            Coord tmp = this.start.copy();
-            this.start = this.end.copy();
-            this.end = tmp;
-        }
+    public Coord getPEnd() {
+        /**
+         * Retourne les coordonnées du point de fin.
+         * 
+         * @return Les coordonnées du point de fin
+         */
+        return this.pEnd;
     }
 
-    public void initializeCoord(Coord c) {
-        this.start = c;
+    public int getBdSize() {
+        /**
+         * Retourne la taille de la bordure.
+         * 
+         * @return La taille de la bordure
+         */
+        return this.bdSize;
     }
 
-    public boolean isIn(Coord c) {
-        double xMin = Math.min(start.x, end.x) - offset;
-        double xMax = Math.max(start.x, end.x) + offset;
-        double yMin = Math.min(start.y, end.y) - offset;
-        double yMax = Math.max(start.y, end.y) + offset;
-
-        return c.x >= xMin && c.x <= xMax && c.y >= yMin && c.y <= yMax;
+    public Color getColor() {
+        /**
+         * Retourne la couleur de la bordure.
+         * 
+         * @return La couleur de la bordure
+         */
+        return this.color;
     }
 
-    public IShape copy() {
-        return new ShapeRect(start, end, toolSize, toolColor);
-    }
-
-    public Coord[] getSelectedCoords() {
+    public Coord[] getArea() {
+        /**
+         * Retourne les coordonnées des points de la zone de la forme.
+         * 
+         * @return Les coordonnées des points de la zone de la forme
+         */
         Coord[] coords = new Coord[2];
 
-        coords[0] = start.translate(-offset);
-        coords[1] = end.translate(offset);
+        coords[0] = pStart.translate(-offset);
+        coords[1] = pEnd.translate(offset);
 
         return coords;
     }
 
-    public void moveTo(Coord mouse) {
-        double dx = mouse.x - ((start.x + end.x) / 2.0);
-        double dy = mouse.y - ((start.y + end.y) / 2.0);
+    public boolean isShape(ShapeTypes type) {
+        /**
+         * Vérifie si la forme est de type type.
+         * 
+         * @param type Type de la forme
+         * @return Vrai si la forme est de type type, faux sinon
+         */
+        return this.type == type;
+    }
 
-        start.moveTo(dx, dy);
-        end.moveTo(dx, dy);
+    public boolean isInArea(Coord coord) {
+        /**
+         * Vérifie si les coordonnées coord sont dans la zone de la forme.
+         * 
+         * @param coord Coordonnées à vérifier
+         * @return Vrai si les coordonnées coord sont dans la zone de la forme, faux
+         *         sinon
+         */
+        double xMin = Math.min(pStart.x, pEnd.x) - offset;
+        double xMax = Math.max(pStart.x, pEnd.x) + offset;
+        double yMin = Math.min(pStart.y, pEnd.y) - offset;
+        double yMax = Math.max(pStart.y, pEnd.y) + offset;
+
+        return coord.x >= xMin && coord.x <= xMax && coord.y >= yMin && coord.y <= yMax;
+    }
+
+    public IShape copy() {
+        /**
+         * Copie la forme.
+         * 
+         * @return La copie de la forme
+         */
+        return new ShapeRect(pStart, pEnd, bdSize, color);
+    }
+
+    public void moveTo(Coord coord) {
+        /**
+         * Déplace la forme aux coordonnées coord.
+         * 
+         * @param coord Coordonnées de destination
+         */
+        double dx = coord.x - ((pStart.x + pEnd.x) / 2.0);
+        double dy = coord.y - ((pStart.y + pEnd.y) / 2.0);
+
+        pStart.moveTo(dx, dy);
+        pEnd.moveTo(dx, dy);
     }
 
     public void draw(GraphicsContext gc) {
-        double width = Math.abs(start.x - end.x);
-        double height = Math.abs(start.y - end.y);
-        double x = Math.min(start.x, end.x);
-        double y = Math.min(start.y, end.y);
+        /**
+         * Dessine la forme.
+         * 
+         * @param gc Contexte graphique
+         */
+        double width = Math.abs(pStart.x - pEnd.x);
+        double height = Math.abs(pStart.y - pEnd.y);
+        double x = Math.min(pStart.x, pEnd.x);
+        double y = Math.min(pStart.y, pEnd.y);
 
-        gc.setStroke(toolColor);
-        gc.setLineWidth(toolSize * Math.exp(zoomFactor - 1));
-        gc.setFill(toolColor);
+        gc.setStroke(color);
+        gc.setLineWidth(bdSize * Math.exp(zoomFactor - 1));
+        gc.setFill(color);
         gc.fillRect(x, y, width, height);
     }
 
     public void zoomIn() {
-        this.zoomFactor = Math.max(.1, this.zoomFactor - .1);
+        /**
+         * Zoom sur l'objet courant
+         */
+        this.zoomFactor = Math.max(Constant.MIN_ZOOM, this.zoomFactor - Constant.ZOOM_STEP);
         zoom();
     }
 
     public void zoomOut() {
-        this.zoomFactor = Math.min(2.1, this.zoomFactor + .1);
+        /**
+         * Dézoom sur l'objet courant
+         */
+        this.zoomFactor = Math.min(Constant.MAX_ZOOM, this.zoomFactor + Constant.ZOOM_STEP);
         zoom();
     }
 
     public void zoom() {
-        start.centerZoom(this.zoomFactor);
-        end.centerZoom(this.zoomFactor);
+        /**
+         * Recalcule les coordonnées de la forme après un zoom
+         */
+        pStart.centerZoom(this.zoomFactor);
+        pEnd.centerZoom(this.zoomFactor);
+    }
+
+    public void finish() {
     }
 }
