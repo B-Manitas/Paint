@@ -135,7 +135,7 @@ public class Coord {
          * @param c : coordonnée
          * @return Coord : coordonnée opposée
          */
-        return new Coord(c.x - distance(c), this.y);
+        return new Coord(c.x - distance(c), c.y);
     }
 
     public void centerZoom(double factor) {
