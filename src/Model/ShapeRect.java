@@ -2,9 +2,8 @@ package Model;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Shape;
 
-public class ShapeRect extends Shape implements IShape {
+public class ShapeRect implements IShape {
 
     private ShapeTypes type = ShapeTypes.RECTANGLE;
     private double offset = Constant.DEFAULT_OFFSET;
