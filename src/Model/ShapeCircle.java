@@ -159,7 +159,11 @@ public class ShapeCircle implements IShape {
          * 
          * @param mouse : coordonnée de la souris
          */
-        this.pCenter = coord;
+        double dx = coord.x - ((pCenter.x + pEnd.x) / 2.0);
+        double dy = coord.y - ((pCenter.y + pEnd.y) / 2.0);
+
+        pCenter.moveTo(dx, dy);
+        pEnd.moveTo(dx, dy);
     }
 
     public void draw(GraphicsContext gc) {
