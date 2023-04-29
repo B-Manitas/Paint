@@ -1,18 +1,21 @@
-## Getting Started
+![Application](DrawApp.png)
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+# Drawing Application
+This drawing application is designed to create vector shapes. It allows users to draw solid geometric shapes, move them around, choose their color, resize them, and organize them in the foreground or background.
 
-## Folder Structure
+## Features
+* **Draw** solid geometric shapes to illustrate your ideas.
+* **Move** shapes around to position them where you want.
+* Customize the **color** of shapes to make them stand out.
+* **Resize** shapes to fit your needs.
+* Organize shapes in **foreground** or **background** to structure your drawing.
+* **Save** your drawings to share them with your collaborators.
+* **Zoom** in on your drawing to see details.
+* Add **text** to annotate your drawing and clarify your ideas.
 
-The workspace contains two folders by default, where:
+## Prerequisites
+- Java
+- JavaFx
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
-
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
-
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+## Credits
+This project was done as part of a university project with [@betacodd](https://github.com/betacodd).
